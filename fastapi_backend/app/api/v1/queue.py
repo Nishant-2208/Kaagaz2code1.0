@@ -264,23 +264,18 @@ async def process_queue_job(
         )
 
         # -------------------------------------------------------------------
-        # Determine document status
+        # Determine document status (via Validation Engine)
         # -------------------------------------------------------------------
 
-        result_status = (
-            ai_result.get("status")
-            or ai_result.get("review_status")
-            or ""
-        ).lower()
-
-        if result_status in {
-            "verified",
-            "approved",
-            "auto_approved",
-        }:
-            document_status = "verified"
-        else:
-            document_status = "needs_review"
+        from app.services.validation_service import validate_ai_extraction
+        
+        document_status = await validate_ai_extraction(
+            db=db,
+            document_id=document_id,
+            job_id=job_id,
+            ai_result=ai_result,
+            user_id=str(current_user["_id"])
+        )
 
         await db.documents.update_one(
             {"document_id": document_id},
