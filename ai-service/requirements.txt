@@ -1,0 +1,23 @@
+# SIH26018 — AI microservice dependencies
+# Tested on Python 3.10 / 3.11 (CPU only). See README for the 3.12 caveat.
+
+# --- web layer ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20        # required by FastAPI for UploadFile
+pydantic==2.10.4
+
+# --- http client for LLM adapters (no vendor SDKs on purpose, see extractor.py) ---
+httpx==0.28.1
+
+# --- vision / OCR ---
+# numpy MUST stay <2: paddleocr 2.7.x is not ABI-compatible with numpy 2.x.
+numpy==1.26.4
+opencv-python-headless==4.10.0.84
+paddlepaddle==2.6.2             # CPU build. GPU: swap for paddlepaddle-gpu==2.6.2
+paddleocr==2.7.3                # PIN THIS. 3.x renamed .ocr() -> .predict() and breaks ocr_engine.py
+
+# --- config / tests ---
+python-dotenv==1.0.1
+pytest==8.3.4
+setuptools>=70.0.0                  # required for paddlepaddle cpp_extension on Python 3.12+

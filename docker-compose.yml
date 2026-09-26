@@ -1,0 +1,29 @@
+services:
+  mongodb:
+    image: mongo:8
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  backend:
+    build: ./fastapi_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./fastapi_backend/.env
+    depends_on:
+      - mongodb
+
+  ai-service:
+    build: ./ai ocr pipeline
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./ai ocr pipeline/.env
+
+volumes:
+  mongodb_data:
