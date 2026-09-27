@@ -20,7 +20,7 @@ def _serialize(value: Any) -> Any:
     return value
 
 
-@router.get("/")
+@router.get("/parcels")
 async def map_records(
     q: str | None = Query(default=None, max_length=200),
     district: str | None = Query(default=None, max_length=100),

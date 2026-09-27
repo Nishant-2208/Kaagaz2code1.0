@@ -30,8 +30,8 @@ export interface LoginRequest {
 }
 
 export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 export interface LoginResponse extends AuthTokens {

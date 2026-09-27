@@ -119,6 +119,14 @@ async def dev_login(
         user_id = str(
             user["_id"]
         )
+        user_dict = {
+            "id": user_id,
+            "name": user["name"],
+            "email": user["email"],
+            "role": user["role"],
+            "provider": user["provider"],
+            "is_active": user["is_active"],
+        }
 
     else:
 
@@ -140,6 +148,14 @@ async def dev_login(
         user_id = str(
             result.inserted_id
         )
+        user_dict = {
+            "id": user_id,
+            "name": data.name,
+            "email": data.email,
+            "role": data.role,
+            "provider": "development",
+            "is_active": True,
+        }
 
     access_token = create_access_token(
         user_id,
@@ -153,6 +169,7 @@ async def dev_login(
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
+        user=user_dict,
     )
 
 
@@ -525,6 +542,14 @@ async def exchange_google_code(
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
+        user={
+            "id": user_id,
+            "name": user.get("name", ""),
+            "email": user.get("email", ""),
+            "role": role,
+            "provider": user.get("provider", "google"),
+            "is_active": user.get("is_active", True),
+        }
     )
 
 

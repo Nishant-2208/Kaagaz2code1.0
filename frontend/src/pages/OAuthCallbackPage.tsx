@@ -7,13 +7,13 @@ export default function OAuthCallbackPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = params.get('accessToken');
-    const refreshToken = params.get('refreshToken');
-    if (!accessToken || !refreshToken) {
+    const access_token = params.get('access_token');
+    const refresh_token = params.get('refresh_token');
+    if (!access_token || !refresh_token) {
       navigate('/login?oauth=failed', { replace: true });
       return;
     }
-    storeTokens({ accessToken, refreshToken });
+    storeTokens({ access_token, refresh_token });
     getCurrentUser().then((user) => {
       storeUser(user);
       navigate(user.role === 'admin' ? '/admin' : user.role === 'officer' ? '/upload' : user.role === 'reviewer' ? '/review' : '/lookup', { replace: true });

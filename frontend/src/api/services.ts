@@ -90,8 +90,8 @@ export function getStoredTokens():
   }
 
   return {
-    accessToken,
-    refreshToken,
+    access_token: accessToken,
+    refresh_token: refreshToken,
   };
 }
 
@@ -101,12 +101,12 @@ export function storeTokens(
 ): void {
   localStorage.setItem(
     ACCESS_TOKEN_KEY,
-    tokens.accessToken,
+    tokens.access_token,
   );
 
   localStorage.setItem(
     REFRESH_TOKEN_KEY,
-    tokens.refreshToken,
+    tokens.refresh_token,
   );
 }
 
@@ -203,10 +203,10 @@ async function request<T>(
           'Content-Type':
             'application/json',
 
-          ...(tokens?.accessToken
+          ...(tokens?.access_token
             ? {
                 Authorization:
-                  `Bearer ${tokens.accessToken}`,
+                  `Bearer ${tokens.access_token}`,
               }
             : {}),
 
@@ -224,7 +224,7 @@ async function request<T>(
   if (
     response.status === 401 &&
     !isRetry &&
-    tokens?.refreshToken
+    tokens?.refresh_token
   ) {
     const refreshed =
       await refreshAccessToken();
@@ -339,10 +339,10 @@ export async function login(
 
 
     return mockDelay({
-      accessToken:
+      access_token:
         'mock-access-token',
 
-      refreshToken:
+      refresh_token:
         'mock-refresh-token',
 
       user,
@@ -351,7 +351,7 @@ export async function login(
 
 
   return request<LoginResponse>(
-    `${API_BASE}/auth/login`,
+    `${API_BASE}/auth/dev-login`,
     {
       method: 'POST',
 
@@ -418,7 +418,7 @@ export async function refreshAccessToken():
         getStoredTokens();
 
       if (
-        !tokens?.refreshToken
+        !tokens?.refresh_token
       ) {
         return false;
       }
@@ -446,7 +446,7 @@ export async function refreshAccessToken():
               body:
                 JSON.stringify({
                   refreshToken:
-                    tokens.refreshToken,
+                    tokens.refresh_token,
                 }),
             },
           );
@@ -509,13 +509,9 @@ export async function getCurrentUser():
   }
 
 
-  return (
-    await request<{
-      user: User;
-    }>(
-      `${API_BASE}/auth/me`,
-    )
-  ).user;
+  return request<User>(
+    `${API_BASE}/auth/me`,
+  );
 }
 
 
@@ -867,7 +863,7 @@ export async function getBatches():
 
 
   return request<Batch[]>(
-    `${API_BASE}/batches`,
+    `${API_BASE}/queue`,
   );
 }
 
@@ -935,15 +931,15 @@ export async function uploadDocument(
 
   const response =
     await fetch(
-      `${API_BASE}/batches/upload`,
+      `${API_BASE}/documents/upload`,
       {
         method: 'POST',
 
         headers:
-          tokens?.accessToken
+          tokens?.access_token
             ? {
                 Authorization:
-                  `Bearer ${tokens.accessToken}`,
+                  `Bearer ${tokens.access_token}`,
               }
             : {},
 

@@ -3,6 +3,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import settings
 
 
+import pytest
+
+@pytest.mark.asyncio
 async def test_connection():
     print("Connecting to MongoDB...")
 

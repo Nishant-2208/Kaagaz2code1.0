@@ -9,22 +9,31 @@ from app.services.normalization_service import normalize_string
 class MockCursor:
     def __init__(self, items):
         self.items = items
+        self._iter = iter(items)
     
-    async def __aiter__(self):
-        for item in self.items:
-            yield item
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        try:
+            return next(self._iter)
+        except StopIteration:
+            raise StopAsyncIteration
 
 
 @pytest.fixture
 def mock_db():
-    db = AsyncMock()
+    db = MagicMock()
     # By default, no existing jobs (no conflicts)
-    db.processing_jobs.find.return_value = MockCursor([])
+    db.processing_jobs.find = MagicMock(return_value=MockCursor([]))
     
-    # Mock insert_many to return some fake ids
-    insert_result = MagicMock()
-    insert_result.inserted_ids = ["fake_id_1", "fake_id_2"]
-    db.discrepancies.insert_many = AsyncMock(return_value=insert_result)
+    # Mock insert_many to return fake ids matching input length
+    async def mock_insert_many(docs):
+        res = MagicMock()
+        res.inserted_ids = [f"fake_id_{i}" for i in range(len(docs))]
+        return res
+        
+    db.discrepancies.insert_many = AsyncMock(side_effect=mock_insert_many)
     
     return db
 

@@ -125,11 +125,11 @@ export function AuthProvider({
           });
 
         storeTokens({
-          accessToken:
-            response.accessToken,
+          access_token:
+            response.access_token,
 
-          refreshToken:
-            response.refreshToken,
+          refresh_token:
+            response.refresh_token,
         });
 
         storeUser(
@@ -162,11 +162,11 @@ export function AuthProvider({
           );
 
         storeTokens({
-          accessToken:
-            response.accessToken,
+          access_token:
+            response.access_token,
 
-          refreshToken:
-            response.refreshToken,
+          refresh_token:
+            response.refresh_token,
         });
 
         storeUser(
