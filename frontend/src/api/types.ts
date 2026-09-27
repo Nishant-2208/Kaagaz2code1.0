@@ -448,9 +448,9 @@ export interface UploadDocumentRequest {
 }
 
 export interface UploadDocumentResponse {
-  batchId: string;
-  recordId: string;
-  status: Batch['status'];
+  job_id: string;
+  document_id: string;
+  status: string;
 }
 
 export interface LookupResult {

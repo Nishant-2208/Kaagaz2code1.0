@@ -16,6 +16,8 @@ gridfs_bucket: AsyncIOMotorGridFSBucket | None = None
 # CONNECT
 # =========================================================
 
+import certifi
+
 async def connect_to_mongodb() -> None:
     global client, database, gridfs_bucket
 
@@ -24,6 +26,7 @@ async def connect_to_mongodb() -> None:
     client = AsyncIOMotorClient(
         settings.mongodb_uri,
         serverSelectionTimeoutMS=5000,
+        tlsCAFile=certifi.where(),
     )
 
     await client.admin.command("ping")

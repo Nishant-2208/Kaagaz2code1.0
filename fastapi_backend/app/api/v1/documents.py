@@ -245,3 +245,33 @@ async def upload_document(
         "content_type": file.content_type,
         "processing_status": "queued",
     }
+
+
+from fastapi.responses import Response
+
+@router.get("/{document_id}/download")
+async def download_document(
+    document_id: str,
+    # No auth check for now so the UI can simply load it via <img src="..." />
+):
+    db = get_db()
+    bucket = get_gridfs_bucket()
+
+    document = await db.documents.find_one({"document_id": document_id})
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found",
+        )
+
+    gridfs_id = document.get("gridfs_id")
+    if not gridfs_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document file not found",
+        )
+
+    grid_out = await bucket.open_download_stream(gridfs_id)
+    file_data = await grid_out.read()
+    
+    return Response(content=file_data, media_type=document.get("content_type", "application/octet-stream"))

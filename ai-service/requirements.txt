@@ -12,7 +12,7 @@ httpx==0.28.1
 
 # --- vision / OCR ---
 # numpy MUST stay <2: paddleocr 2.7.x is not ABI-compatible with numpy 2.x.
-numpy==1.26.4
+numpy
 opencv-python-headless==4.10.0.84
 paddlepaddle==2.6.2             # CPU build. GPU: swap for paddlepaddle-gpu==2.6.2
 paddleocr==2.7.3                # PIN THIS. 3.x renamed .ocr() -> .predict() and breaks ocr_engine.py

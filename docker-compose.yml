@@ -18,12 +18,12 @@ services:
       - mongodb
 
   ai-service:
-    build: ./ai ocr pipeline
+    build: ./ai-service
     restart: unless-stopped
     ports:
       - "8001:8001"
     env_file:
-      - ./ai ocr pipeline/.env
+      - ./ai-service/.env
 
 volumes:
   mongodb_data:

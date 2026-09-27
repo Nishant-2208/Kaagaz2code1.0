@@ -38,24 +38,6 @@ const languages: LanguageOption[] = [
   { value: 'mixed', label: 'Multilingual / Bi-script' },
 ];
 
-const pipelineSteps = [
-  {
-    step: '01',
-    name: 'OpenCV Preprocessing',
-    desc: 'Deskewing, Otsu binarization, table grid & contour extraction',
-  },
-  {
-    step: '02',
-    name: 'Tesseract OCR Pipeline',
-    desc: 'Multi-script text layer extraction & confidence scoring',
-  },
-  {
-    step: '03',
-    name: 'Cadastral & Field Audit',
-    desc: 'Extract Khasra, Owner, Area & cross-check legacy registry',
-  },
-];
-
 const acceptedTypes = [
   'application/pdf',
   'image/jpeg',
@@ -78,7 +60,6 @@ export default function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [activeStage, setActiveStage] = useState<number>(0);
 
   useEffect(() => {
     if (!file) {
@@ -156,36 +137,23 @@ export default function UploadPage() {
 
     setError('');
     setIsProcessing(true);
-    setActiveStage(1);
 
     try {
-      // Kick off the real pipeline: OpenCV preprocessing -> Tesseract OCR
-      // -> LLM structured extraction -> confidence scoring (see
-      // backend_dev_engg.md). The stage indicator below advances as the
-      // upload completes and the batch is queued for processing.
-      const uploadPromise = uploadDocument({
+      const result = await uploadDocument({
         file,
         documentType,
         language,
         enableGeoReference: locationEnabled,
       });
 
-      await new Promise((r) => setTimeout(r, 400));
-      setActiveStage(2);
-
-      const result = await uploadPromise;
-      setActiveStage(3);
-
-      await new Promise((r) => setTimeout(r, 400));
       navigate('/review', {
-        state: { recordId: result.recordId, batchId: result.batchId },
+        state: { documentId: result.document_id, jobId: result.job_id },
       });
     } catch {
       setError(
         'Upload failed. Check your connection to the processing service and try again.',
       );
       setIsProcessing(false);
-      setActiveStage(0);
     }
   }
 
@@ -193,39 +161,19 @@ export default function UploadPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
-      {/* =====================================================
-          PAGE HEADER
-      ===================================================== */}
       <header className="mb-8 border-b border-outline-variant/60 pb-6">
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                SIH Problem Statement 26018
-              </span>
-              <span className="rounded bg-primary-fixed px-2 py-0.5 text-[10px] font-bold text-primary">
-                Kaagaz2Code Intake
-              </span>
-            </div>
-            <h1 className="mt-2 text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-              Land Record Ingestion & Preprocessing
-            </h1>
-            <p className="mt-1 text-sm text-on-surface-variant">
-              Upload legacy deeds, Mouza cadastral maps, or Khatonis for automated OpenCV deskewing and multi-script Tesseract extraction.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            Dual OCR Engine Online
-          </div>
-        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+          Upload Land Record
+        </h1>
+        <p className="mt-1 text-sm text-on-surface-variant">
+          Upload legacy deeds, Mouza cadastral maps, or Khatonis for automated data extraction.
+        </p>
       </header>
 
       {/* =====================================================
           MAIN GRID
       ===================================================== */}
-      <main className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+      <main className="max-w-3xl">
         {/* ===================================================
             LEFT — DOCUMENT INGESTION & LIVE INSPECTION
         =================================================== */}
@@ -483,7 +431,7 @@ export default function UploadPage() {
                     <span className="material-symbols-outlined text-base animate-spin">
                       progress_activity
                     </span>
-                    Running Engine ({activeStage}/3)…
+                    Uploading and Processing…
                   </>
                 ) : (
                   <>
@@ -497,82 +445,6 @@ export default function UploadPage() {
             </div>
           </section>
         </div>
-
-        {/* ===================================================
-            RIGHT — PIPELINE ARCHITECTURE (FOR JUDGES & AUDIT)
-        =================================================== */}
-        <aside className="space-y-4">
-          <section className="rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-5 shadow-xs">
-            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
-                Dual Ingestion Pipeline
-              </p>
-              <span className="material-symbols-outlined text-primary text-lg">
-                schema
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-4">
-              {pipelineSteps.map((p, idx) => {
-                const isCurrent = isProcessing && activeStage === idx + 1;
-                const isDone = isProcessing && activeStage > idx + 1;
-
-                return (
-                  <div
-                    key={p.step}
-                    className={`flex gap-3 rounded-lg border p-3 transition ${
-                      isCurrent
-                        ? 'border-primary bg-primary-fixed/20'
-                        : isDone
-                        ? 'border-emerald-300 bg-emerald-50/50'
-                        : 'border-outline-variant/50 bg-surface-container-low'
-                    }`}
-                  >
-                    <span
-                      className={`font-mono text-xs font-bold ${
-                        isCurrent
-                          ? 'text-primary'
-                          : isDone
-                          ? 'text-emerald-700'
-                          : 'text-outline'
-                      }`}
-                    >
-                      {p.step}
-                    </span>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <p className="text-xs font-bold text-on-surface">
-                          {p.name}
-                        </p>
-                        {isCurrent && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                        )}
-                        {isDone && (
-                          <span className="material-symbols-outlined text-xs text-emerald-700 font-bold">
-                            check_circle
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-4 text-on-surface-variant">
-                        {p.desc}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-4 text-xs text-on-surface-variant shadow-xs">
-            <span className="flex items-center gap-1.5 font-bold text-on-surface mb-1">
-              <span className="material-symbols-outlined text-base text-primary">
-                verified_user
-              </span>
-              Preservation of Legacy Deeds
-            </span>
-            Original raster scans are cryptographically hashed and anchored alongside the extracted JSON records to prevent data tampering.
-          </section>
-        </aside>
       </main>
     </div>
   );

@@ -16,114 +16,114 @@
 
 @theme {
   /* =======================================================
-     PRIMARY
+     PRIMARY (Teal Accent)
      ======================================================= */
 
-  --color-primary: #000666;
-  --color-primary-container: #1a237e;
-  --color-primary-fixed: #e0e0ff;
-  --color-primary-fixed-dim: #bdc2ff;
+  --color-primary: #0d9488;
+  --color-primary-container: #0f766e;
+  --color-primary-fixed: #ccfbf1;
+  --color-primary-fixed-dim: #99f6e4;
 
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #8690ee;
-  --color-on-primary-fixed: #000767;
-  --color-on-primary-fixed-variant: #343d96;
+  --color-on-primary-container: #ffffff;
+  --color-on-primary-fixed: #115e59;
+  --color-on-primary-fixed-variant: #0f766e;
 
-  --color-inverse-primary: #bdc2ff;
+  --color-inverse-primary: #5eead4;
 
   /* =======================================================
-     SECONDARY
+     SECONDARY (Dark Navy)
      ======================================================= */
 
-  --color-secondary: #4355b9;
-  --color-secondary-container: #8596ff;
-  --color-secondary-fixed: #dee0ff;
-  --color-secondary-fixed-dim: #bac3ff;
+  --color-secondary: #1e293b;
+  --color-secondary-container: #0f172a;
+  --color-secondary-fixed: #e2e8f0;
+  --color-secondary-fixed-dim: #cbd5e1;
 
   --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #11278e;
-  --color-on-secondary-fixed: #00105c;
-  --color-on-secondary-fixed-variant: #293ca0;
+  --color-on-secondary-container: #ffffff;
+  --color-on-secondary-fixed: #0f172a;
+  --color-on-secondary-fixed-variant: #1e293b;
 
   /* =======================================================
-     TERTIARY
+     TERTIARY (Muted Blue)
      ======================================================= */
 
-  --color-tertiary: #380b00;
-  --color-tertiary-container: #5c1800;
-  --color-tertiary-fixed: #ffdbd0;
-  --color-tertiary-fixed-dim: #ffb59d;
+  --color-tertiary: #0284c7;
+  --color-tertiary-container: #0369a1;
+  --color-tertiary-fixed: #e0f2fe;
+  --color-tertiary-fixed-dim: #bae6fd;
 
   --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #e17c5a;
-  --color-on-tertiary-fixed: #390c00;
-  --color-on-tertiary-fixed-variant: #7b2e12;
+  --color-on-tertiary-container: #ffffff;
+  --color-on-tertiary-fixed: #075985;
+  --color-on-tertiary-fixed-variant: #0369a1;
 
   /* =======================================================
-     SURFACE
+     SURFACE (White and Light Grey)
      ======================================================= */
 
-  --color-surface: #fbf9f8;
-  --color-surface-dim: #dbdad9;
-  --color-surface-bright: #fbf9f8;
-  --color-surface-variant: #e4e2e2;
+  --color-surface: #ffffff;
+  --color-surface-dim: #f8fafc;
+  --color-surface-bright: #ffffff;
+  --color-surface-variant: #f1f5f9;
 
-  --color-surface-container: #efeded;
-  --color-surface-container-low: #f5f3f3;
-  --color-surface-container-high: #e9e8e7;
-  --color-surface-container-highest: #e4e2e2;
+  --color-surface-container: #f8fafc;
+  --color-surface-container-low: #f1f5f9;
+  --color-surface-container-high: #e2e8f0;
+  --color-surface-container-highest: #cbd5e1;
   --color-surface-container-lowest: #ffffff;
 
-  --color-surface-tint: #4c56af;
+  --color-surface-tint: #f8fafc;
 
-  --color-on-surface: #1b1c1c;
-  --color-on-surface-variant: #454652;
+  --color-on-surface: #0f172a; /* Dark Navy for main text/headings */
+  --color-on-surface-variant: #475569; /* Slate 600 for secondary text */
 
-  --color-inverse-surface: #303031;
-  --color-inverse-on-surface: #f2f0f0;
+  --color-inverse-surface: #0f172a;
+  --color-inverse-on-surface: #f8fafc;
 
   /* =======================================================
      BACKGROUND
      ======================================================= */
 
-  --color-background: #fbf9f8;
-  --color-on-background: #1b1c1c;
+  --color-background: #ffffff;
+  --color-on-background: #0f172a;
 
   /* =======================================================
      OUTLINES
      ======================================================= */
 
-  --color-outline: #767683;
-  --color-outline-variant: #c6c5d4;
+  --color-outline: #64748b;
+  --color-outline-variant: #cbd5e1;
 
   /* =======================================================
      ERROR
      ======================================================= */
 
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
+  --color-error: #dc2626;
+  --color-error-container: #fef2f2;
 
   --color-on-error: #ffffff;
-  --color-on-error-container: #93000a;
+  --color-on-error-container: #991b1b;
 
   /* =======================================================
      APPLICATION STATUS COLORS
      ======================================================= */
 
-  --color-success: #0f9d58;
-  --color-success-bg: #e6f4ea;
+  --color-success: #16a34a;
+  --color-success-bg: #f0fdf4;
 
-  --color-warning: #e65100;
-  --color-warning-bg: #fff3e0;
+  --color-warning: #ea580c;
+  --color-warning-bg: #fff7ed;
 
-  --color-danger: #d93025;
-  --color-danger-bg: #fce8e6;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fef2f2;
 
   /* =======================================================
      TYPOGRAPHY
      ======================================================= */
 
-  --font-headline: "Hanken Grotesk", sans-serif;
+  --font-headline: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 

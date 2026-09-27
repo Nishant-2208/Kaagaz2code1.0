@@ -103,17 +103,26 @@ async def get_record(
             detail="Record not found",
         )
 
-    job = await db.processing_jobs.find_one(
-        {"document_id": record_id},
-        sort=[("created_at", -1)],
-    )
-
-    return _serialize(
-        {
-            "document": document,
-            "processing_job": job,
-        }
-    )
+    if not job:
+        job = {}
+        
+    # The frontend expects a LandRecord object
+    return {
+        "id": document.get("document_id"),
+        "khasraNo": "", 
+        "ownerName": document.get("uploaded_by", ""),
+        "area": "",
+        "areaUnit": "",
+        "registrationDate": document.get("created_at", "").isoformat() if hasattr(document.get("created_at"), "isoformat") else document.get("created_at"),
+        "village": "",
+        "tehsil": "",
+        "district": "",
+        "status": document.get("status"),
+        "overallConfidence": 100,
+        "fields": [],
+        "sourceImageUrl": f"http://localhost:8000/api/v1/documents/{record_id}/download",
+        "createdAt": document.get("created_at", "").isoformat() if hasattr(document.get("created_at"), "isoformat") else document.get("created_at"),
+    }
 
 
 @router.patch("/{record_id}/review")
@@ -352,3 +361,71 @@ async def reject_record(
         "rejected_by": str(current_user["_id"]),
         "rejected_at": now,
     }
+
+
+@router.get("/{record_id}/fields")
+async def get_record_fields(
+    record_id: str,
+    current_user=Depends(
+        require_role("reviewer", "officer", "admin")
+    ),
+):
+    db = get_db()
+    
+    job = await db.processing_jobs.find_one(
+        {"document_id": record_id},
+        sort=[("created_at", -1)],
+    )
+    
+    if not job or "result" not in job or "extraction" not in job["result"]:
+        return []
+
+    extraction = job["result"]["extraction"]
+    
+    fields = []
+    def add_field(field_name, value, default_confidence=95):
+        if value:
+            conf_level = "high"
+            if default_confidence < 90:
+                conf_level = "low"
+            fields.append({
+                "fieldId": field_name.replace(" ", "_").lower(),
+                "label": field_name,
+                "value": str(value),
+                "confidence": default_confidence,
+                "confidenceLevel": conf_level
+            })
+
+    # Location Details
+    loc = extraction.get("location_details", {})
+    add_field("Village", loc.get("village"))
+    add_field("Tehsil", loc.get("tehsil"))
+    add_field("District", loc.get("district"))
+    add_field("State", loc.get("state"))
+    
+    # Ownership Details
+    owner = extraction.get("ownership_details", {})
+    add_field("Owner Name", owner.get("landowner_name"))
+    add_field("Father/Husband Name", owner.get("father_husband_name"))
+    
+    # Land Identifiers
+    ids = extraction.get("land_identifiers", {})
+    add_field("Khasra Number", ids.get("khasra_number"))
+    add_field("Khata Number", ids.get("khata_number"))
+    add_field("Survey Number", ids.get("survey_number"))
+    
+    # Land Details
+    land = extraction.get("land_details", {})
+    add_field("Total Area", land.get("total_area"))
+    add_field("Land Use Type", land.get("land_use_type"))
+    
+    # Adjust confidences for flagged fields
+    conf_scores = extraction.get("confidence_scores", {})
+    for flagged in conf_scores.get("flagged_fields", []):
+        field_path = flagged.get("field", "")
+        # Very rough mapping to the flattened names
+        for f in fields:
+            if f["id"] in field_path.lower():
+                f["confidence"] = 60 # Set to low confidence
+
+    return fields

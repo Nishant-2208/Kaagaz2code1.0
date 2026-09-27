@@ -6,22 +6,25 @@ import {
   getRecords,
   submitReviewDecision,
   updateExtractedField,
+  getJobStatus,
+  processJob,
 } from '../api/services';
 import type { ExtractedField, LandRecord } from '../api/types';
 import { ConfidenceBadge } from '../components/shared';
 
 interface LocationState {
-  recordId?: string;
-  batchId?: string;
+  documentId?: string;
+  jobId?: string;
 }
 
 export default function ReviewPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { recordId } = (location.state as LocationState) ?? {};
+  const { documentId, jobId } = (location.state as LocationState) ?? {};
 
   const [record, setRecord] = useState<LandRecord | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessingJob, setIsProcessingJob] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -48,8 +51,37 @@ export default function ReviewPage() {
       setLoadError('');
 
       try {
-        const resolvedRecord = recordId
-          ? await getRecordById(recordId)
+        if (jobId) {
+          const statusResp = await getJobStatus(jobId);
+          let status = statusResp.job?.status;
+
+          if (status === 'queued') {
+            setIsProcessingJob(true);
+            try {
+              await processJob(jobId);
+              // Wait a little bit for the DB to settle
+              await new Promise(r => setTimeout(r, 1000));
+            } catch (err: any) {
+              throw new Error('Processing failed: ' + err.message);
+            } finally {
+              if (!cancelled) setIsProcessingJob(false);
+            }
+            
+            const newStatusResp = await getJobStatus(jobId);
+            status = newStatusResp.job?.status;
+          }
+
+          if (status === 'processing') {
+            throw new Error('Document is still processing. Please check back later.');
+          }
+
+          if (status === 'failed') {
+            throw new Error('Processing failed. Please try uploading again.');
+          }
+        }
+
+        const resolvedRecord = documentId
+          ? await getRecordById(documentId)
           : (await getRecords())[0];
 
         if (!resolvedRecord) {
@@ -67,10 +99,12 @@ export default function ReviewPage() {
             editedValue: field.editedValue ?? field.value,
           })),
         );
-      } catch {
+      } catch (err: any) {
         if (!cancelled) {
           setLoadError(
-            'Could not load the record for review. Confirm the processing service is reachable.',
+            err.message === 'No record found for review.'
+              ? 'No records currently require review. The queue is empty!'
+              : 'Could not load the record for review. Confirm the processing service is reachable.',
           );
         }
       } finally {
@@ -83,7 +117,7 @@ export default function ReviewPage() {
     return () => {
       cancelled = true;
     };
-  }, [recordId]);
+  }, [documentId, jobId]);
 
   const lowConfidenceCount = fields.filter(
     (field) => field.confidence < 90,
@@ -191,6 +225,15 @@ export default function ReviewPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (isProcessingJob) {
+    return (
+      <div className="flex min-h-[400px] flex-col items-center justify-center text-sm text-on-surface-variant gap-4">
+        <span className="material-symbols-outlined text-4xl animate-spin text-primary">progress_activity</span>
+        <p>Running AI extraction pipeline. This may take a moment...</p>
+      </div>
+    );
   }
 
   if (isLoading) {

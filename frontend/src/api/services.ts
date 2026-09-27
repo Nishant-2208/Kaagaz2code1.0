@@ -350,17 +350,22 @@ export async function login(
   }
 
 
-  return request<LoginResponse>(
-    `${API_BASE}/auth/dev-login`,
-    {
-      method: 'POST',
+    const roleFromEmail = credentials.email.split('@')[0];
+    const validRoles = ['citizen', 'officer', 'reviewer', 'admin'];
+    const role = validRoles.includes(roleFromEmail) ? roleFromEmail : 'officer';
+    const name = role === 'admin' ? 'Administrator' : role === 'reviewer' ? 'Senior Reviewer' : role === 'citizen' ? 'Citizen User' : 'Revenue Officer';
 
-      body:
-        JSON.stringify(
-          credentials,
-        ),
-    },
-  );
+    return request<LoginResponse>(
+        `${API_BASE}/auth/dev-login`,
+        {
+            method: 'POST',
+            body: JSON.stringify({
+                email: credentials.email,
+                name: name,
+                role: role,
+            }),
+        },
+    );
 }
 
 
@@ -880,16 +885,16 @@ export async function uploadDocument(
 
     return mockDelay(
       {
-        batchId:
+        job_id:
           mockBatches[0]?.id ??
           'BATCH-MOCK-001',
 
-        recordId:
+        document_id:
           mockRecords[0]?.id ??
           'REC-MOCK-001',
 
         status:
-          'processing',
+          'queued',
       },
 
       900,
@@ -960,6 +965,20 @@ export async function uploadDocument(
   >;
 }
 
+
+/* =========================================================
+   QUEUE / JOBS
+   ========================================================= */
+
+export async function getJobStatus(jobId: string) {
+  return request<any>(`${API_BASE}/queue/${encodeURIComponent(jobId)}`);
+}
+
+export async function processJob(jobId: string) {
+  return request<any>(`${API_BASE}/queue/${encodeURIComponent(jobId)}/process`, {
+    method: 'POST',
+  });
+}
 
 /* =========================================================
    AUDIT TRAIL
