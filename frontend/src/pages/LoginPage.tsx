@@ -5,10 +5,6 @@ import {
 
 import { useNavigate } from 'react-router-dom';
 
-import {
-  GoogleLogin,
-} from '@react-oauth/google';
-
 import { useAuth } from '../contexts/AuthContext';
 
 import type {
@@ -76,7 +72,6 @@ export default function LoginPage() {
 
   const {
     login,
-    completeGoogleLogin,
   } = useAuth();
 
 
@@ -92,14 +87,8 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] =
     useState(false);
 
-  const [isGoogleSubmitting, setIsGoogleSubmitting] =
-    useState(false);
-
   const [error, setError] =
     useState('');
-
-  const googleClientId =
-    import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
 
   // =======================================================
@@ -126,136 +115,6 @@ export default function LoginPage() {
         return '/lookup';
     }
   }
-
-
-  // =======================================================
-  // GOOGLE REDIRECT HANDLER
-  // =======================================================
-
-  useEffect(() => {
-
-    const params =
-      new URLSearchParams(
-        window.location.search,
-      );
-
-
-    /*
-     * URLSearchParams.get() returns:
-     *
-     * string | null
-     *
-     * Explicitly validate it before passing it
-     * to completeGoogleLogin().
-     */
-    const codeParam =
-      params.get('code');
-
-
-    if (
-      typeof codeParam !== 'string' ||
-      codeParam.length === 0
-    ) {
-      return;
-    }
-
-
-    /*
-     * From this point onward TypeScript knows
-     * this is a real string.
-     */
-    const code: string =
-      codeParam;
-
-
-    let cancelled = false;
-
-
-    async function completeRedirectLogin() {
-
-      setError('');
-
-      setIsGoogleSubmitting(
-        true,
-      );
-
-
-      try {
-
-        const user =
-          await completeGoogleLogin(
-            code,
-          );
-
-
-        if (cancelled) {
-          return;
-        }
-
-
-        /*
-         * Remove the one-time Google exchange
-         * code from the browser URL.
-         */
-        window.history.replaceState(
-          {},
-          document.title,
-          '/login',
-        );
-
-
-        navigate(
-          getDestination(
-            user.role,
-          ),
-          {
-            replace: true,
-          },
-        );
-
-
-      } catch (googleError) {
-
-        console.error(
-          'Google redirect login failed:',
-          googleError,
-        );
-
-
-        if (!cancelled) {
-
-          setError(
-            googleError instanceof Error
-              ? googleError.message
-              : 'Google sign-in failed. Please try again.',
-          );
-        }
-
-
-      } finally {
-
-        if (!cancelled) {
-
-          setIsGoogleSubmitting(
-            false,
-          );
-        }
-      }
-    }
-
-
-    void completeRedirectLogin();
-
-
-    return () => {
-      cancelled = true;
-    };
-
-
-  }, [
-    completeGoogleLogin,
-    navigate,
-  ]);
 
 
   // =======================================================
@@ -343,7 +202,9 @@ export default function LoginPage() {
 
 
       setError(
-        'Sign-in failed. Check your Service ID and Authorization Passkey.',
+        loginError instanceof Error
+          ? loginError.message
+          : 'Sign-in failed. Please verify the selected role and try again.',
       );
 
 
@@ -365,24 +226,6 @@ export default function LoginPage() {
     setError(
       'Google sign-in was cancelled or failed.',
     );
-  }
-
-
-  /*
-   * IMPORTANT:
-   *
-   * @react-oauth/google currently requires
-   * onSuccess in its TypeScript props.
-   *
-   * In redirect mode, Google sends the credential
-   * directly to login_uri, so this callback is not
-   * used for the actual authentication flow.
-   *
-   * We keep an empty callback only to satisfy
-   * the installed package's TypeScript definition.
-   */
-  function handleGoogleSuccess(): void {
-    return;
   }
 
 
@@ -593,58 +436,6 @@ export default function LoginPage() {
 
 
           {/* =================================================
-              GOOGLE LOGIN
-          ================================================= */}
-
-          {googleClientId && (
-            <div className="mt-5">
-
-
-            {isGoogleSubmitting ? (
-
-              <div className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-outline-variant bg-surface px-4 text-xs font-semibold text-on-surface">
-
-                <span className="material-symbols-outlined animate-spin text-base">
-                  progress_activity
-                </span>
-
-
-                Signing in with Google…
-
-              </div>
-
-            ) : (
-
-              <div className="flex w-full justify-center">
-
-
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleError}
-                  useOneTap={false}
-                  ux_mode="redirect"
-                  login_uri="http://localhost:8000/api/v1/auth/google"
-                  use_fedcm_for_button={false}
-                  theme="outline"
-                  size="large"
-                  width="400"
-                />
-
-
-              </div>
-
-            )}
-
-
-            <p className="mt-2 text-center text-[10px] text-outline">
-              Sign in securely with your Google account
-            </p>
-
-            </div>
-          )}
-
-
-          {/* =================================================
               ERROR
           ================================================= */}
 
@@ -665,6 +456,13 @@ export default function LoginPage() {
             </div>
 
           )}
+
+
+          <div className="mt-5 rounded-lg border border-primary/15 bg-primary-fixed/20 px-3 py-2.5">
+            <p className="text-[11px] leading-5 text-on-surface-variant">
+              Development access is enabled for local integration testing. Password input is retained for the UI; authentication is handled by the FastAPI development login endpoint.
+            </p>
+          </div>
 
 
           {/* =================================================
