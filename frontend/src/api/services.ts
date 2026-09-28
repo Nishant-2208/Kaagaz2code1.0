@@ -260,21 +260,70 @@ function mapBackendRecord(payload: any): LandRecord {
   };
 }
 
+async function refreshAccessToken(): Promise<string | null> {
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  if (!refreshToken) return null;
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        refresh_token: refreshToken,
+      }),
+    });
+
+    if (!response.ok) {
+      clearTokens();
+      return null;
+    }
+
+    const tokens = (await response.json()) as AuthTokens;
+    storeTokens(tokens);
+    return tokens.accessToken;
+  } catch {
+    clearTokens();
+    return null;
+  }
+}
+
 async function request<T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const tokens = getStoredTokens();
+  async function send(accessToken?: string): Promise<Response> {
+    const headers = new Headers(options.headers);
 
-  const headers = new Headers(options.headers);
-  if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
-    headers.set('Content-Type', 'application/json');
-  }
-  if (tokens?.accessToken) {
-    headers.set('Authorization', `Bearer ${tokens.accessToken}`);
+    if (
+      !headers.has('Content-Type') &&
+      !(options.body instanceof FormData)
+    ) {
+      headers.set('Content-Type', 'application/json');
+    }
+
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`);
+    }
+
+    return fetch(url, { ...options, headers });
   }
 
-  const response = await fetch(url, { ...options, headers });
+  let tokens = getStoredTokens();
+  let response = await send(tokens?.accessToken);
+
+  // Access tokens are intentionally short-lived. If one expires while
+  // the user is still active, refresh it once and retry the original
+  // request before treating the session as expired.
+  if (response.status === 401 && tokens?.refreshToken) {
+    const refreshedAccessToken = await refreshAccessToken();
+
+    if (refreshedAccessToken) {
+      tokens = getStoredTokens();
+      response = await send(tokens?.accessToken);
+    }
+  }
 
   if (response.status === 401) {
     clearTokens();
