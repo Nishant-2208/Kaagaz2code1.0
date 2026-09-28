@@ -23,6 +23,14 @@ class GoogleLoginExchangeRequest(BaseModel):
 # TOKEN RESPONSE
 # =========================================================
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
+# =========================================================
+# TOKEN RESPONSE
+# =========================================================
+
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
