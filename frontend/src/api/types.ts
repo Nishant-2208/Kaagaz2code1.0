@@ -395,6 +395,12 @@ export interface QueueItem {
   createdAt: string;
 
   batchId: string;
+
+  /**
+   * Backend document ID associated with this processing job.
+   * Queue job IDs and document IDs are different values.
+   */
+  recordId?: string;
 }
 
 /* =========================================================
