@@ -986,25 +986,17 @@ export async function getQueueItems(): Promise<QueueItem[]> {
 export async function getAdminStats(): Promise<AdminStats> {
   if (USE_MOCKS) return mockDelay(mockAdminStats);
 
-  const [records, discrepancies] = await Promise.all([
-    getRecords(),
-    getDiscrepancies(),
-  ]);
-
-  const total = records.length;
-  const approved = records.filter((record) => record.status === 'approved').length;
-  const pending = records.filter((record) =>
-    record.status === 'needs_review' ||
-    record.status === 'pending_review'
-  ).length;
+  const data = await request<any>(`${API_BASE}/admin/stats`);
 
   return {
-    accuracyRate: total ? Math.round((approved / total) * 100) : 0,
+    accuracyRate: Number(data?.average_confidence ?? 0),
     accuracyTrend: 0,
-    totalRecords: total,
-    pendingConflicts: discrepancies.filter((item: any) => item.status !== 'resolved').length || pending,
-    monthlyVolume: String(total),
-    trendData: [0, 0, 0, 0, 0, 0, total],
+    totalRecords: Number(data?.total_records ?? 0),
+    pendingConflicts: Number(data?.pending_conflicts ?? 0),
+    monthlyVolume: String(data?.monthly_volume ?? 0),
+    trendData: Array.isArray(data?.confidence_trend)
+      ? data.confidence_trend.map((value: unknown) => Number(value))
+      : [],
   };
 }
 
