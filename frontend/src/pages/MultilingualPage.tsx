@@ -13,6 +13,7 @@ type ViewMode = 'side' | 'stacked';
 
 type ReviewField = ExtractedField & {
   editedValue: string;
+  normalizedLanguage: string;
 };
 
 function detectLanguage(value: string): string {
