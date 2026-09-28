@@ -391,7 +391,7 @@ export default function ReviewPage() {
                     </p>
                   </div>
                 </div>
-              )
+              )}
 
             </div>
 
