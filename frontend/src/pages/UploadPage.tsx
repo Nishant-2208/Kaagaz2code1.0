@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { uploadDocument } from '../api/services';
+import { processQueueJob, uploadDocument } from '../api/services';
 
 type DocumentType =
   | 'khata_khatoni'
@@ -42,17 +42,17 @@ const pipelineSteps = [
   {
     step: '01',
     name: 'OpenCV Preprocessing',
-    desc: 'Deskewing, Otsu binarization, table grid & contour extraction',
+    desc: 'Deskewing, adaptive thresholding & document cleanup',
   },
   {
     step: '02',
-    name: 'Tesseract OCR Pipeline',
-    desc: 'Multi-script text layer extraction & confidence scoring',
+    name: 'PaddleOCR Extraction Pipeline',
+    desc: 'Hindi / English text extraction with OCR confidence scoring',
   },
   {
     step: '03',
     name: 'Cadastral & Field Audit',
-    desc: 'Extract Khasra, Owner, Area & cross-check legacy registry',
+    desc: 'Extract Khasra, owner, area & land-record fields',
   },
 ];
 
@@ -95,7 +95,7 @@ export default function UploadPage() {
       !acceptedTypes.includes(selectedFile.type) &&
       !selectedFile.name.endsWith('.pdf')
     ) {
-      return 'Unsupported file format. Please upload a PDF, TIFF, JPG, PNG, or TIFF scan.';
+      return 'Unsupported file format. Please upload a PDF, TIFF, JPG, or PNG scan.';
     }
 
     if (selectedFile.size > MAX_FILE_SIZE) {
@@ -173,9 +173,12 @@ export default function UploadPage() {
       setActiveStage(2);
 
       const result = await uploadPromise;
-      setActiveStage(3);
 
-      await new Promise((r) => setTimeout(r, 400));
+      // Upload creates a queued backend job. Run that job through the real
+      // FastAPI → AI/OCR pipeline before opening the review screen.
+      setActiveStage(3);
+      await processQueueJob(result.jobId);
+
       navigate('/review', {
         state: { recordId: result.recordId, batchId: result.batchId },
       });
@@ -285,7 +288,7 @@ export default function UploadPage() {
 
                   <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                     <span className="rounded-md border border-outline-variant/60 bg-surface-container px-2 py-1 text-[11px] text-outline font-mono">
-                      Max 25 MB
+                      Max 15 MB
                     </span>
                     <span className="rounded-md border border-outline-variant/60 bg-surface-container px-2 py-1 text-[11px] text-outline font-mono">
                       PDF, JPG, PNG, TIFF
