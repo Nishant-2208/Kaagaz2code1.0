@@ -260,7 +260,7 @@ function mapBackendRecord(payload: any): LandRecord {
   };
 }
 
-async function refreshAccessToken(): Promise<string | null> {
+async function refreshStoredAccessToken(): Promise<string | null> {
   const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
   if (!refreshToken) return null;
 
@@ -280,9 +280,21 @@ async function refreshAccessToken(): Promise<string | null> {
       return null;
     }
 
-    const tokens = (await response.json()) as AuthTokens;
-    storeTokens(tokens);
-    return tokens.accessToken;
+    const data = await response.json();
+    const accessToken = data?.access_token;
+    const newRefreshToken = data?.refresh_token;
+
+    if (!accessToken || !newRefreshToken) {
+      clearTokens();
+      return null;
+    }
+
+    storeTokens({
+      accessToken,
+      refreshToken: newRefreshToken,
+    });
+
+    return accessToken;
   } catch {
     clearTokens();
     return null;
@@ -317,7 +329,7 @@ async function request<T>(
   // the user is still active, refresh it once and retry the original
   // request before treating the session as expired.
   if (response.status === 401 && tokens?.refreshToken) {
-    const refreshedAccessToken = await refreshAccessToken();
+    const refreshedAccessToken = await refreshStoredAccessToken();
 
     if (refreshedAccessToken) {
       tokens = getStoredTokens();
@@ -431,8 +443,7 @@ export async function exchangeGoogleCode(code: string): Promise<LoginResponse> {
 }
 
 export async function refreshAccessToken(): Promise<boolean> {
-  // The current FastAPI backend does not expose /auth/refresh.
-  return false;
+  return Boolean(await refreshStoredAccessToken());
 }
 
 export async function getCurrentUser(): Promise<User> {
