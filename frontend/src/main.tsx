@@ -18,22 +18,20 @@ if (!rootElement) {
 
 
 const googleClientId =
-  import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
-
-if (!googleClientId) {
-  throw new Error(
-    'Kaagaz2Code: VITE_GOOGLE_CLIENT_ID is not configured.',
-  );
-}
-
+const app = googleClientId ? (
+  <GoogleOAuthProvider
+    clientId={googleClientId}
+  >
+    <App />
+  </GoogleOAuthProvider>
+) : (
+  <App />
+);
 
 createRoot(rootElement).render(
   <StrictMode>
-    <GoogleOAuthProvider
-      clientId={googleClientId}
-    >
-      <App />
-    </GoogleOAuthProvider>
+    {app}
   </StrictMode>,
 );
