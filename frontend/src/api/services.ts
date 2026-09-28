@@ -1024,8 +1024,10 @@ export async function getLookupResults(query?: LookupQuery): Promise<LookupResul
   const q = query?.query?.trim();
   if (!q) return [];
 
+  const searchType = query?.type ?? 'khasra';
+
   const data = await request<any>(
-    `${API_BASE}/lookup/?q=${encode(q)}&limit=20`,
+    `${API_BASE}/lookup/?q=${encode(q)}&type=${encode(searchType)}&limit=20`,
   );
 
   return (data?.items ?? []).map((item: any) => ({
@@ -1040,6 +1042,6 @@ export async function getLookupResults(query?: LookupQuery): Promise<LookupResul
     tehsil: asText(item.location_details?.tehsil),
     district: asText(item.location_details?.district),
     landType: asText(item.land_details?.land_classification),
-    status: 'verified',
+    status: item?.status === 'approved' ? 'approved' : 'verified',
   }));
 }
