@@ -11,6 +11,7 @@ from fastapi import (
     Request,
     status,
 )
+from fastapi.responses import StreamingResponse
 
 from app.core.config import settings
 from app.core.dependencies import require_role
@@ -245,3 +246,84 @@ async def upload_document(
         "content_type": file.content_type,
         "processing_status": "queued",
     }
+
+
+@router.get(
+    "/{document_id}/download",
+    response_class=StreamingResponse,
+)
+async def download_document(
+    document_id: str,
+    current_user=Depends(
+        require_role(
+            "officer",
+            "reviewer",
+            "admin",
+        )
+    ),
+):
+    """
+    Stream an uploaded land document from MongoDB GridFS.
+
+    Access is restricted to officer, reviewer, and admin roles.
+    """
+
+    db = get_db()
+    bucket = get_gridfs_bucket()
+
+    document = await db.documents.find_one(
+        {"document_id": document_id}
+    )
+
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found.",
+        )
+
+    gridfs_id = document.get("gridfs_id")
+
+    if not gridfs_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document file is not available.",
+        )
+
+    try:
+        grid_out = await bucket.open_download_stream(
+            gridfs_id
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document file is not available.",
+        )
+
+    filename = document.get(
+        "filename",
+        "document",
+    )
+
+    content_type = document.get(
+        "content_type",
+        "application/octet-stream",
+    )
+
+    async def stream_file():
+        while True:
+            chunk = await grid_out.read(1024 * 1024)
+
+            if not chunk:
+                break
+
+            yield chunk
+
+    return StreamingResponse(
+        stream_file(),
+        media_type=content_type,
+        headers={
+            "Content-Disposition": (
+                f'attachment; filename="{filename}"'
+            ),
+        },
+    )
