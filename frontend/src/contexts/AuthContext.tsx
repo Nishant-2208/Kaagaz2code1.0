@@ -4,7 +4,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -74,15 +73,10 @@ export function AuthProvider({
   // RESTORE SESSION
   // =======================================================
 
-  const restoreStarted = useRef(false);
-
   useEffect(() => {
-    // React StrictMode intentionally runs effects twice in development.
-    // Session restoration must be single-flight, otherwise two /auth/me
-    // requests can race and the losing request can clear a valid session.
-    if (restoreStarted.current) return;
-    restoreStarted.current = true;
-
+    // React StrictMode runs effects twice in development. The first
+    // invocation is cancelled by cleanup; the second invocation continues
+    // and is responsible for completing session restoration.
     let cancelled = false;
 
     async function restoreSession() {
