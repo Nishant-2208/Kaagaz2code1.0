@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -73,40 +74,69 @@ export function AuthProvider({
   // RESTORE SESSION
   // =======================================================
 
+  const restoreStarted = useRef(false);
+
   useEffect(() => {
+    // React StrictMode intentionally runs effects twice in development.
+    // Session restoration must be single-flight, otherwise two /auth/me
+    // requests can race and the losing request can clear a valid session.
+    if (restoreStarted.current) return;
+    restoreStarted.current = true;
+
+    let cancelled = false;
+
     async function restoreSession() {
-      const tokens =
-        getStoredTokens();
+      const tokens = getStoredTokens();
 
       if (!tokens) {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
         return;
       }
 
-      const cachedUser =
-        getStoredUser();
+      const cachedUser = getStoredUser();
 
-      if (cachedUser) {
+      // Render the cached identity immediately while /auth/me confirms it.
+      // This prevents navigation/reload flashes and keeps the workspace
+      // mounted while the backend session is being verified.
+      if (cachedUser && !cancelled) {
         setUser(cachedUser);
       }
 
       try {
-        const freshUser =
-          await getCurrentUser();
+        const freshUser = await getCurrentUser();
+
+        if (cancelled) return;
 
         setUser(freshUser);
-
         storeUser(freshUser);
       } catch {
-        // Invalid/expired backend sessions must not remain authenticated.
-        clearTokens();
-        setUser(null);
+        if (cancelled) return;
+
+        // Only discard the session when the backend actually rejected it.
+        // A temporary network/backend restart should not destroy the local
+        // session during a browser reload.
+        const stillStored = getStoredTokens();
+
+        if (!stillStored) {
+          setUser(null);
+        } else if (!cachedUser) {
+          clearTokens();
+          setUser(null);
+        } else {
+          setUser(cachedUser);
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     }
 
-    restoreSession();
+    void restoreSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
 
