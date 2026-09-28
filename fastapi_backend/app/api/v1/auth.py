@@ -33,6 +33,7 @@ from app.core.rate_limit import limiter
 from app.core.security import (
     create_access_token,
     create_refresh_token,
+    decode_refresh_token,
 )
 
 from app.db.mongodb import get_db
@@ -40,6 +41,7 @@ from app.db.mongodb import get_db
 from app.schemas.auth import (
     DevLoginRequest,
     GoogleLoginExchangeRequest,
+    RefreshTokenRequest,
     TokenResponse,
     UserResponse,
 )
@@ -525,6 +527,72 @@ async def exchange_google_code(
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
+    )
+
+
+# =========================================================
+# REFRESH ACCESS TOKEN
+# =========================================================
+
+@router.post(
+    "/refresh",
+    response_model=TokenResponse,
+)
+async def refresh_access_token(
+    data: RefreshTokenRequest,
+):
+    db = get_db()
+
+    try:
+        payload = decode_refresh_token(
+            data.refresh_token
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+        )
+
+    if payload.get("type") != "refresh":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+        )
+
+    user_id = payload.get("sub")
+
+    if not user_id or not ObjectId.is_valid(user_id):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token subject",
+        )
+
+    user = await db.users.find_one(
+        {"_id": ObjectId(user_id)}
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account not found",
+        )
+
+    if not user.get("is_active", True):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive",
+        )
+
+    role = user.get("role", "citizen")
+
+    return TokenResponse(
+        access_token=create_access_token(
+            str(user["_id"]),
+            role,
+        ),
+        refresh_token=create_refresh_token(
+            str(user["_id"]),
+        ),
     )
 
 
