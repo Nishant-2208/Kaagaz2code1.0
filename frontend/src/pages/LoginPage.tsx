@@ -3,7 +3,12 @@ import {
   useState,
 } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+
+import {
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
 
@@ -79,7 +84,14 @@ export default function LoginPage() {
 
   const {
     login,
+    completeGoogleLogin,
   } = useAuth();
+
+  const [searchParams, setSearchParams] =
+    useSearchParams();
+
+  const googleClientId =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
 
   const [selectedRole, setSelectedRole] =
@@ -96,6 +108,9 @@ export default function LoginPage() {
 
   const [error, setError] =
     useState('');
+
+  const [isGoogleSubmitting, setIsGoogleSubmitting] =
+    useState(false);
 
 
   // =======================================================
@@ -222,6 +237,58 @@ export default function LoginPage() {
       );
     }
   }
+
+
+  // =======================================================
+  // GOOGLE REDIRECT RETURN
+  // =======================================================
+
+  useEffect(() => {
+    const code = searchParams.get('code');
+
+    if (!code || isGoogleSubmitting) return;
+
+    let cancelled = false;
+
+    async function finishGoogleLogin() {
+      setError('');
+      setIsGoogleSubmitting(true);
+
+      try {
+        const user = await completeGoogleLogin(code);
+
+        if (cancelled) return;
+
+        setSearchParams({}, { replace: true });
+        navigate(getDestination(user.role), { replace: true });
+      } catch (googleError) {
+        if (!cancelled) {
+          setError(
+            googleError instanceof Error
+              ? googleError.message
+              : 'Google sign-in could not be completed.',
+          );
+          setSearchParams({}, { replace: true });
+        }
+      } finally {
+        if (!cancelled) {
+          setIsGoogleSubmitting(false);
+        }
+      }
+    }
+
+    void finishGoogleLogin();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    completeGoogleLogin,
+    isGoogleSubmitting,
+    navigate,
+    searchParams,
+    setSearchParams,
+  ]);
 
 
   // =======================================================
@@ -662,6 +729,46 @@ export default function LoginPage() {
 
             )}
 
+
+
+          {/* =================================================
+              GOOGLE ACCESS
+          ================================================= */}
+
+          <div className="mt-5">
+            <div className="my-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-outline-variant/60" />
+              <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-outline">
+                or sign in with Google
+              </span>
+              <div className="h-px flex-1 bg-outline-variant/60" />
+            </div>
+
+            {googleClientId ? (
+              <div className="flex w-full justify-center">
+                <GoogleLogin
+                  onSuccess={() => undefined}
+                  onError={handleGoogleError}
+                  useOneTap={false}
+                  ux_mode="redirect"
+                  login_uri="http://localhost:8000/api/v1/auth/google"
+                  use_fedcm_for_button={false}
+                  theme="outline"
+                  size="large"
+                  width="400"
+                />
+              </div>
+            ) : (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-center text-[11px] leading-5 text-amber-800">
+                Google sign-in is ready, but the frontend Google client ID
+                is not configured in <span className="font-mono">.env</span>.
+              </div>
+            )}
+
+            <p className="mt-2 text-center text-[10px] text-outline">
+              Secure Google authentication • redirected through FastAPI
+            </p>
+          </div>
 
           {/* =================================================
               CITIZEN
