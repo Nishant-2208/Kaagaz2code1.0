@@ -222,6 +222,7 @@ function mapBackendRecord(payload: any): LandRecord {
   const document = payload?.document ?? payload;
   const job = payload?.processing_job ?? payload?.job;
   const result = getProcessingResult(payload);
+  const extraction = result?.extraction ?? {};
   const fields = extractionFields(result, document?.status);
 
   const identifiers = extraction?.land_identifiers ?? {};
