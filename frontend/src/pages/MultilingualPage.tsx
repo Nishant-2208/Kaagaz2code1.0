@@ -61,7 +61,11 @@ export default function MultilingualPage() {
   const [sourcePreviewUrl, setSourcePreviewUrl] = useState<string | null>(null);
   const [sourcePreviewType, setSourcePreviewType] = useState('');
 
-  const canEdit = user?.role === 'reviewer' || user?.role === 'admin';
+  const canEdit =
+    (user?.role === 'reviewer' || user?.role === 'admin') &&
+    (record?.status === 'needs_review' ||
+      record?.status === 'pending_review' ||
+      record?.status === 'in_review');
 
   useEffect(() => {
     let cancelled = false;
@@ -582,7 +586,7 @@ export default function MultilingualPage() {
                   <button
                     type="button"
                     onClick={() => void handleSave()}
-                    disabled={!editing || isSaving}
+                    disabled={!editing || !canEdit || isSaving}
                     className="min-h-11 rounded-lg bg-primary px-5 text-xs font-semibold text-on-primary transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isSaving ? 'Saving…' : 'Save Review Changes'}
