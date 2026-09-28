@@ -576,16 +576,25 @@ export async function submitRecordReview(
     }
   }
 
-  return request<any>(`${API_BASE}/records/${encode(recordId)}/review`, {
-    method: 'PATCH',
-    body: JSON.stringify({
-      location_details: sections.location_details,
-      land_identifiers: sections.land_identifiers,
-      land_details: sections.land_details,
-      ownership_details: sections.ownership_details,
-      review_notes: reviewNotes || null,
-    }),
-  });
+  const currentUser = getStoredUser();
+  const endpoint =
+    currentUser?.role === 'officer'
+      ? 'draft'
+      : 'review';
+
+  return request<any>(
+    `${API_BASE}/records/${encode(recordId)}/${endpoint}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({
+        location_details: sections.location_details,
+        land_identifiers: sections.land_identifiers,
+        land_details: sections.land_details,
+        ownership_details: sections.ownership_details,
+        review_notes: reviewNotes || null,
+      }),
+    },
+  );
 }
 
 export async function submitReviewDecision(
@@ -618,9 +627,22 @@ export async function submitReviewDecision(
   // This compatibility method handles decision-only callers. The review page
   // uses submitRecordReview first, then this method for approve/reject.
   if (payload.decision === 'approve') {
-    await request<any>(`${API_BASE}/records/${encode(payload.recordId)}/approve`, {
-      method: 'PATCH',
-    });
+    await request<any>(
+      `${API_BASE}/records/${encode(payload.recordId)}/review`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          review_notes: payload.comment || null,
+        }),
+      },
+    );
+
+    await request<any>(
+      `${API_BASE}/records/${encode(payload.recordId)}/approve`,
+      {
+        method: 'PATCH',
+      },
+    );
   } else if (payload.decision === 'reject') {
     await request<any>(`${API_BASE}/records/${encode(payload.recordId)}/reject`, {
       method: 'PATCH',
