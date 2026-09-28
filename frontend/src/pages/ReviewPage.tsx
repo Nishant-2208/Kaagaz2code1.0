@@ -371,7 +371,7 @@ export default function ReviewPage() {
                   <iframe
                     src={sourcePreviewUrl}
                     title="Original scanned land record"
-                    className="block h-[calc(100vh-250px)] min-h-[760px] w-full border-0 bg-white
+                    className="block h-[calc(100vh-250px)] min-h-[760px] w-full border-0 bg-white"
                   />
                 ) : (
                   <img
