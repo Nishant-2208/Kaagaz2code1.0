@@ -12,11 +12,7 @@ import type {
 } from '../api/types';
 
 
-type Role =
-  Exclude<
-    UserRole,
-    'reviewer'
-  >;
+type Role = UserRole;
 
 
 interface RoleConfig {
@@ -54,11 +50,22 @@ const ROLES: RoleConfig[] = [
   },
 
   {
+    role: 'reviewer',
+    label: 'Reviewer',
+    badge: 'Verification Desk',
+    icon: 'fact_check',
+    defaultId: 'reviewer@kaagaz.dev',
+    route: '/review',
+    description:
+      'Validate AI-extracted fields, record review decisions, and approve land records.',
+  },
+
+  {
     role: 'citizen',
     label: 'Citizen / Public',
     badge: 'Open Registry',
     icon: 'public',
-    defaultId: '',
+    defaultId: 'citizen@kaagaz.dev',
     route: '/lookup',
     description:
       'Search verified Khasra parcels, cadastral maps, and mutation status.',
@@ -363,7 +370,7 @@ export default function LoginPage() {
               ROLE SELECTOR
           ================================================= */}
 
-          <div className="grid grid-cols-3 gap-2 rounded-xl border border-outline-variant/70 bg-surface-container-low p-1.5">
+          <div className="grid grid-cols-2 gap-2 rounded-xl sm:grid-cols-4 border border-outline-variant/70 bg-surface-container-low p-1.5">
 
 
             {ROLES.map(
