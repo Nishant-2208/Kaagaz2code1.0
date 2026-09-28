@@ -134,7 +134,16 @@ function getNested(obj: any, path: string): unknown {
 }
 
 function extractionFields(result: any, status?: string): ExtractedField[] {
-  const extraction = result?.extraction ?? {};
+  const extraction =
+    result?.extraction ??
+    (result?.location_details ||
+    result?.land_identifiers ||
+    result?.land_details ||
+    result?.ownership_details ||
+    result?.confidence_scores
+      ? result
+      : {});
+
   const overall = asConfidencePercent(
     extraction?.confidence_scores?.overall_confidence,
     asConfidencePercent(result?.confidence, 0),
@@ -186,11 +195,33 @@ function extractionFields(result: any, status?: string): ExtractedField[] {
   });
 }
 
+function getProcessingResult(payload: any): any {
+  const candidates = [
+    payload?.processing_job?.result,
+    payload?.processing_job?.ai_result,
+    payload?.result,
+    payload?.ai_result,
+  ];
+
+  for (const candidate of candidates) {
+    if (candidate?.extraction) return candidate;
+    if (
+      candidate?.location_details ||
+      candidate?.land_identifiers ||
+      candidate?.land_details ||
+      candidate?.ownership_details
+    ) {
+      return { extraction: candidate };
+    }
+  }
+
+  return {};
+}
+
 function mapBackendRecord(payload: any): LandRecord {
   const document = payload?.document ?? payload;
   const job = payload?.processing_job ?? payload?.job;
-  const result = job?.result ?? payload?.result ?? {};
-  const extraction = result?.extraction ?? {};
+  const result = getProcessingResult(payload);
   const fields = extractionFields(result, document?.status);
 
   const identifiers = extraction?.land_identifiers ?? {};
@@ -403,8 +434,12 @@ export async function getExtractedFields(recordId: string): Promise<ExtractedFie
   if (USE_MOCKS) return mockDelay(mockExtractedFields);
 
   const record = await request<any>(`${API_BASE}/records/${encode(recordId)}`);
-  const job = record?.processing_job;
-  return extractionFields(job?.result ?? {}, record?.document?.status);
+  const result = getProcessingResult(record);
+
+  return extractionFields(
+    result,
+    record?.document?.status ?? record?.status,
+  );
 }
 
 /* =========================================================
@@ -558,6 +593,21 @@ export async function getBatches(): Promise<Batch[]> {
     processedCount: job.status === 'completed' ? 1 : 0,
     totalCount: 1,
   }));
+}
+
+export async function processQueueJob(jobId: string): Promise<any> {
+  if (USE_MOCKS) {
+    return mockDelay({
+      success: true,
+      job_id: jobId,
+      status: 'completed',
+      document_status: 'needs_review',
+    }, 900);
+  }
+
+  return request<any>(`${API_BASE}/queue/${encode(jobId)}/process`, {
+    method: 'POST',
+  });
 }
 
 export async function uploadDocument(
