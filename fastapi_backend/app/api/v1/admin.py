@@ -28,6 +28,24 @@ def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _as_utc(value: Any) -> datetime | None:
+    """
+    Normalize MongoDB/Python datetimes before comparisons.
+
+    Motor/PyMongo commonly returns BSON datetimes as naive UTC datetimes
+    unless the client is configured with tz_aware=True, while application
+    code may create timezone-aware UTC datetimes. Python does not allow
+    direct comparison between those two forms.
+    """
+    if not isinstance(value, datetime):
+        return None
+
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+
+    return value.astimezone(timezone.utc)
+
+
 def _serialize(value: Any) -> Any:
     if isinstance(value, ObjectId):
         return str(value)
@@ -91,8 +109,10 @@ async def get_admin_stats(
     monthly_volume = sum(
         1
         for document in documents
-        if isinstance(document.get("created_at"), datetime)
-        and document["created_at"] >= month_start
+        if (
+            (created_at := _as_utc(document.get("created_at"))) is not None
+            and created_at >= month_start
+        )
     )
 
     discrepancy_cursor = db.discrepancies.find(
