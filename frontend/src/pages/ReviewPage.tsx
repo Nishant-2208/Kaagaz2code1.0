@@ -5,7 +5,7 @@ import {
   getRecordById,
   getRecords,
   submitReviewDecision,
-  updateExtractedField,
+  submitRecordReview,
 } from '../api/services';
 import type { ExtractedField, LandRecord } from '../api/types';
 import { ConfidenceBadge } from '../components/shared';
@@ -120,19 +120,16 @@ export default function ReviewPage() {
   async function persistEditedFields() {
     if (!record) return;
 
-    const edited = fields.filter(
+    const hasChanges = fields.some(
       (field) => field.editedValue !== field.value,
     );
 
-    await Promise.all(
-      edited.map((field) =>
-        updateExtractedField({
-          recordId: record.id,
-          fieldId: field.fieldId,
-          value: field.editedValue,
-          reason: note || undefined,
-        }),
-      ),
+    if (!hasChanges && !note.trim()) return;
+
+    await submitRecordReview(
+      record.id,
+      fields,
+      note.trim() || undefined,
     );
   }
 
