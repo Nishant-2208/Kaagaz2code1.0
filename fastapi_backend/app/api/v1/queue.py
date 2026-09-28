@@ -370,7 +370,15 @@ async def process_queue_job(
 # ---------------------------------------------------------------------------
 
 @router.get("/")
-async def list_processing_jobs():
+async def list_processing_jobs(
+    current_user=Depends(
+        require_role(
+            "officer",
+            "reviewer",
+            "admin",
+        )
+    ),
+):
     db = get_db()
 
     jobs = await (
@@ -400,6 +408,13 @@ async def list_processing_jobs():
 @router.get("/{job_id}")
 async def get_processing_job(
     job_id: str,
+    current_user=Depends(
+        require_role(
+            "officer",
+            "reviewer",
+            "admin",
+        )
+    ),
 ):
     db = get_db()
 
