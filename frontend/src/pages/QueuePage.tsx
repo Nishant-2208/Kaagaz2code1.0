@@ -96,15 +96,21 @@ export default function QueuePage() {
     return queueItems.filter((item) => {
       const matchesSearch =
         normalizedSearch === '' ||
-        item.khasraNo.toLowerCase().includes(normalizedSearch) ||
-        item.ownerName.toLowerCase().includes(normalizedSearch) ||
-        item.id.toLowerCase().includes(normalizedSearch) ||
-        item.village.toLowerCase().includes(normalizedSearch) ||
-        item.district.toLowerCase().includes(normalizedSearch);
+        [
+          item.khasraNo,
+          item.ownerName,
+          item.id,
+          item.village,
+          item.district,
+          item.recordId,
+        ]
+          .map((value) => String(value ?? '').toLowerCase())
+          .some((value) => value.includes(normalizedSearch));
 
       const matchesStatus =
-        statusFilter === 'all' ||
-        item.status === statusFilter;
+        statusFilter === 'all'
+          ? true
+          : String(item.status) === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
