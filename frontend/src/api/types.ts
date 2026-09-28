@@ -46,6 +46,11 @@ export type RecordStatus =
   | 'pending_review'
   | 'in_review'
   | 'verified'
+  | 'approved'
+  | 'rejected'
+  | 'needs_review'
+  | 'processing'
+  | 'failed'
   | 'flagged'
   | 'discrepancy'
   | 'locked';
@@ -450,6 +455,8 @@ export interface UploadDocumentRequest {
 export interface UploadDocumentResponse {
   batchId: string;
   recordId: string;
+  documentId: string;
+  jobId: string;
   status: Batch['status'];
 }
 
