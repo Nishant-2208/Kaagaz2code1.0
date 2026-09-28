@@ -40,6 +40,51 @@ def _serialize(value: Any) -> Any:
     return value
 
 
+def _is_empty_review_data(value: Any) -> bool:
+    """
+    Detect empty/default Swagger-generated objects such as:
+
+    {
+        "additionalProp1": {}
+    }
+
+    These should not overwrite existing extracted data.
+    """
+    if value is None:
+        return True
+
+    if not isinstance(value, dict):
+        return False
+
+    if not value:
+        return True
+
+    if set(value.keys()) == {"additionalProp1"}:
+        return not bool(value.get("additionalProp1"))
+
+    return False
+
+
+def _merge_section(
+    existing: dict[str, Any],
+    updates: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """
+    Preserve existing extraction values and update only meaningful
+    values supplied by the reviewer.
+    """
+    if _is_empty_review_data(updates):
+        return existing
+
+    merged = dict(existing)
+
+    for key, value in updates.items():
+        if value is not None:
+            merged[key] = value
+
+    return merged
+
+
 @router.get("/")
 async def list_records(
     current_user=Depends(
@@ -163,29 +208,72 @@ async def review_record(
 
     extraction = result.get("extraction", {})
 
-    if payload.location_details is not None:
-        extraction["location_details"] = payload.location_details
+    if not isinstance(extraction, dict):
+        extraction = {}
 
-    if payload.land_identifiers is not None:
-        extraction["land_identifiers"] = payload.land_identifiers
+    existing_location_details = extraction.get(
+        "location_details",
+        {},
+    )
 
-    if payload.land_details is not None:
-        extraction["land_details"] = payload.land_details
+    existing_land_identifiers = extraction.get(
+        "land_identifiers",
+        {},
+    )
 
-    if payload.ownership_details is not None:
-        extraction["ownership_details"] = payload.ownership_details
+    existing_land_details = extraction.get(
+        "land_details",
+        {},
+    )
+
+    existing_ownership_details = extraction.get(
+        "ownership_details",
+        {},
+    )
+
+    if not isinstance(existing_location_details, dict):
+        existing_location_details = {}
+
+    if not isinstance(existing_land_identifiers, dict):
+        existing_land_identifiers = {}
+
+    if not isinstance(existing_land_details, dict):
+        existing_land_details = {}
+
+    if not isinstance(existing_ownership_details, dict):
+        existing_ownership_details = {}
+
+    extraction["location_details"] = _merge_section(
+        existing_location_details,
+        payload.location_details,
+    )
+
+    extraction["land_identifiers"] = _merge_section(
+        existing_land_identifiers,
+        payload.land_identifiers,
+    )
+
+    extraction["land_details"] = _merge_section(
+        existing_land_details,
+        payload.land_details,
+    )
+
+    extraction["ownership_details"] = _merge_section(
+        existing_ownership_details,
+        payload.ownership_details,
+    )
 
     result["extraction"] = extraction
 
+    now = _utc_now()
+
     result["review"] = {
         "reviewed_by": str(current_user["_id"]),
-        "reviewed_at": _utc_now(),
+        "reviewed_at": now,
         "notes": payload.review_notes,
     }
 
     result["status"] = "verified"
-
-    now = _utc_now()
 
     await db.processing_jobs.update_one(
         {"job_id": job["job_id"]},
