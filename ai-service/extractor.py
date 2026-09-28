@@ -258,23 +258,57 @@ def _get_path(data: dict[str, Any], path: str) -> Any:
     return value if value not in ("", "null", "N/A") else None
 
 
+def _normalize_evidence(value: str) -> str:
+    return re.sub(r"\\s+", " ", value.casefold().strip())
+
+
+def _deterministic_field_confidence(
+    value: str,
+    path: str,
+    ocr_text: str,
+    ocr_mean_conf: float,
+    image_illegible: bool,
+) -> float:
+    """
+    Stable confidence score derived from observable evidence.
+
+    The LLM is used to extract values, but it is not trusted to self-report
+    confidence. This keeps the same document's confidence stable across
+    repeated LLM calls.
+    """
+    normalized_value = _normalize_evidence(value)
+    normalized_ocr = _normalize_evidence(ocr_text)
+
+    ocr_component = max(0.0, min(1.0, ocr_mean_conf))
+    base = 0.70 + (0.25 * ocr_component)
+
+    if normalized_value and normalized_value in normalized_ocr:
+        evidence = 1.0
+    else:
+        group, _ = path.split(".", 1)
+        evidence = 0.82 if group.replace("_", " ") in normalized_ocr else 0.72
+
+    score = base * evidence
+
+    if image_illegible:
+        score *= 0.80
+
+    return round(max(0.0, min(1.0, score)), 3)
+
+
 def assemble(
     raw: dict[str, Any],
     ocr_mean_conf: float,
     image_illegible: bool,
+    ocr_text: str = "",
 ) -> LandRecordExtraction:
-    """Turn the model's raw dict into a validated LandRecordExtraction.
+    """Validate extraction and compute deterministic confidence scores.
 
-    Per-field confidence = LLM self-report, damped by OCR mean confidence.
+    Confidence is based on OCR quality plus observable field evidence.
+    Model self-reported confidence is deliberately ignored for scoring.
     """
-    field_conf: dict[str, Any] = raw.get("field_confidence") or {}
     illegible: set[str] = set(
         raw.get("illegible_fields") or []
-    )
-
-    damp = 0.5 + 0.5 * max(
-        0.0,
-        min(1.0, ocr_mean_conf),
     )
 
     flagged: list[FlaggedField] = []
@@ -283,26 +317,11 @@ def assemble(
     for path in FIELD_PATHS:
         value = _get_path(raw, path)
 
-        try:
-            llm_conf = float(
-                field_conf.get(path, 0.0)
-            )
-        except (TypeError, ValueError):
-            llm_conf = 0.0
-
-        llm_conf = max(
-            0.0,
-            min(1.0, llm_conf),
-        )
-
         if path in illegible:
             flagged.append(
                 FlaggedField(
                     field=path,
-                    confidence=round(
-                        llm_conf * damp,
-                        3,
-                    ),
+                    confidence=0.0,
                     reason="illegible",
                 )
             )
@@ -320,32 +339,29 @@ def assemble(
             scores.append(0.0)
             continue
 
-        score = round(
-            llm_conf * damp,
-            3,
+        score = _deterministic_field_confidence(
+            str(value),
+            path,
+            ocr_text,
+            ocr_mean_conf,
+            image_illegible,
         )
 
         scores.append(score)
 
         if score < FIELD_FLAG_THRESHOLD:
-            reason = (
-                "low_ocr_confidence"
-                if ocr_mean_conf < 0.7
-                else "llm_uncertain"
-            )
-
             flagged.append(
                 FlaggedField(
                     field=path,
                     confidence=score,
-                    reason=reason,
+                    reason="low_ocr_confidence",
                 )
             )
 
         elif (
             path == "land_details.plot_area"
             and not re.search(
-                r"(hect|ha\b|acre|bigha|biswa|sq|मी|हेक्ट|एकड़|बीघा)",
+                r"(hect|ha\\b|acre|bigha|biswa|sq|मी|हेक्ट|एकड़|बीघा)",
                 str(value),
                 re.IGNORECASE,
             )
@@ -363,12 +379,6 @@ def assemble(
         if scores
         else 0.0
     )
-
-    if image_illegible:
-        overall = round(
-            overall * 0.8,
-            3,
-        )
 
     payload = {
         "location_details": (
@@ -448,6 +458,7 @@ class LLMExtractor(ABC):
                     raw,
                     ocr_mean_conf,
                     image_illegible,
+                    ocr_text,
                 )
 
             except LLMResponseError as exc:
