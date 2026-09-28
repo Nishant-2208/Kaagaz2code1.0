@@ -60,11 +60,10 @@ const acceptedTypes = [
   'application/pdf',
   'image/jpeg',
   'image/png',
-  'image/webp',
   'image/tiff',
 ];
 
-const MAX_FILE_SIZE = 25 * 1024 * 1024;
+const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -96,11 +95,11 @@ export default function UploadPage() {
       !acceptedTypes.includes(selectedFile.type) &&
       !selectedFile.name.endsWith('.pdf')
     ) {
-      return 'Unsupported file format. Please upload a PDF, TIFF, JPG, PNG, or WebP scan.';
+      return 'Unsupported file format. Please upload a PDF, TIFF, JPG, PNG, or TIFF scan.';
     }
 
     if (selectedFile.size > MAX_FILE_SIZE) {
-      return 'File size exceeds 25 MB. Please upload an optimized scan.';
+      return 'File size exceeds 15 MB. Please upload an optimized scan.';
     }
 
     return null;
@@ -296,7 +295,7 @@ export default function UploadPage() {
                   <input
                     ref={inputRef}
                     type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.webp,.tif,.tiff"
+                    accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff"
                     onChange={handleInputChange}
                     className="sr-only"
                   />
