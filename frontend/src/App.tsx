@@ -19,6 +19,7 @@ import ReviewPage from './pages/ReviewPage';
 import QueuePage from './pages/QueuePage';
 import AdminPage from './pages/AdminPage';
 import RecordDetailPage from './pages/RecordDetailPage';
+import RecordsPage from './pages/RecordsPage';
 import DiscrepancyPage from './pages/DiscrepancyPage';
 import MultilingualPage from './pages/MultilingualPage';
 import MapPage from './pages/MapPage';
@@ -120,6 +121,11 @@ function AppRoutes() {
           <Route
             path="/queue"
             element={<QueuePage />}
+          />
+
+          <Route
+            path="/records"
+            element={<RecordsPage />}
           />
 
           <Route
