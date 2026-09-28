@@ -29,7 +29,7 @@ const navItems: NavItem[] = [
     roles: ['officer', 'reviewer', 'admin'],
   },
   {
-    to: '/records/REC-8924',
+    to: '/records',
     label: 'Records',
     icon: 'inventory_2',
     roles: ['officer', 'reviewer', 'admin'],
