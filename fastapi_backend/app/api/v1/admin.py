@@ -47,6 +47,112 @@ def _serialize(value: Any) -> Any:
     return value
 
 
+@router.get("/stats")
+async def get_admin_stats(
+    current_user=Depends(
+        require_role("admin")
+    ),
+):
+    """
+    Return live administrative metrics from MongoDB.
+
+    Confidence is calculated from completed processing-job extraction
+    confidence scores. It is deliberately reported as confidence rather
+    than pretending it is ground-truth OCR accuracy.
+    """
+    db = get_db()
+    now = _utc_now()
+
+    documents = await db.documents.find(
+        {},
+        {
+            "_id": 0,
+            "document_id": 1,
+            "status": 1,
+            "created_at": 1,
+            "updated_at": 1,
+        },
+    ).to_list(length=None)
+
+    total_records = len(documents)
+
+    status_counts: dict[str, int] = {}
+    for document in documents:
+        status = str(document.get("status") or "unknown")
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+    month_start = datetime(
+        now.year,
+        now.month,
+        1,
+        tzinfo=timezone.utc,
+    )
+
+    monthly_volume = sum(
+        1
+        for document in documents
+        if isinstance(document.get("created_at"), datetime)
+        and document["created_at"] >= month_start
+    )
+
+    discrepancy_cursor = db.discrepancies.find(
+        {},
+        {"status": 1},
+    )
+    pending_conflicts = 0
+    async for discrepancy in discrepancy_cursor:
+        if discrepancy.get("status") != "resolved":
+            pending_conflicts += 1
+
+    jobs = await db.processing_jobs.find(
+        {"status": "completed"},
+        {
+            "_id": 0,
+            "result": 1,
+            "created_at": 1,
+        },
+    ).sort(
+        "created_at",
+        -1,
+    ).limit(7).to_list(length=7)
+
+    confidence_values: list[float] = []
+    trend_data: list[int] = []
+
+    for job in reversed(jobs):
+        result = job.get("result") or {}
+        extraction = result.get("extraction") or {}
+        confidence_scores = extraction.get("confidence_scores") or {}
+        value = confidence_scores.get("overall_confidence")
+
+        if isinstance(value, (int, float)):
+            percent = round(
+                max(0.0, min(1.0, float(value))) * 100
+            )
+            confidence_values.append(float(percent))
+            trend_data.append(percent)
+
+    average_confidence = (
+        round(sum(confidence_values) / len(confidence_values))
+        if confidence_values
+        else 0
+    )
+
+    officer_count = await db.users.count_documents(
+        {"role": "officer"}
+    )
+
+    return {
+        "total_records": total_records,
+        "records_by_status": status_counts,
+        "average_confidence": average_confidence,
+        "confidence_trend": trend_data,
+        "pending_conflicts": pending_conflicts,
+        "monthly_volume": monthly_volume,
+        "active_officers": officer_count,
+    }
+
+
 @router.get("/users")
 async def list_users(
     limit: int = Query(default=50, ge=1, le=200),
