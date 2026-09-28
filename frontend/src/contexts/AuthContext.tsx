@@ -23,6 +23,7 @@ import {
   getStoredUser,
   storeTokens,
   storeUser,
+  clearTokens,
 } from '../api/services';
 
 
@@ -97,7 +98,9 @@ export function AuthProvider({
 
         storeUser(freshUser);
       } catch {
-        // Keep cached user during prototype development.
+        // Invalid/expired backend sessions must not remain authenticated.
+        clearTokens();
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
