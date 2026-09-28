@@ -828,7 +828,10 @@ export async function getQueueItems(): Promise<QueueItem[]> {
     );
 
     return {
+      // IMPORTANT: the queue row represents a processing job, but ReviewPage
+      // loads the record using the document ID. Keep both IDs.
       id: asText(job.job_id),
+      recordId: asText(job.document_id),
       khasraNo: asText(
         identifiers.khasra_number ??
         identifiers.survey_number ??
