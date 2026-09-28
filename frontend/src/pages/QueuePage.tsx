@@ -23,6 +23,10 @@ const statusOptions: Array<{
       label: 'Pending Review',
     },
     {
+      value: 'needs_review',
+      label: 'Needs Review',
+    },
+    {
       value: 'in_review',
       label: 'In Review',
     },
@@ -109,7 +113,8 @@ export default function QueuePage() {
   const awaitingReviewCount = queueItems.filter(
     (item) =>
       item.status === 'pending_review' ||
-      item.status === 'in_review',
+      item.status === 'in_review' ||
+      item.status === 'needs_review',
   ).length;
 
   const conflictCount = queueItems.filter(
