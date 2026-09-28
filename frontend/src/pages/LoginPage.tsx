@@ -98,6 +98,9 @@ export default function LoginPage() {
   const [error, setError] =
     useState('');
 
+  const googleClientId =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
+
 
   // =======================================================
   // DESTINATION
@@ -593,7 +596,8 @@ export default function LoginPage() {
               GOOGLE LOGIN
           ================================================= */}
 
-          <div className="mt-5">
+          {googleClientId && (
+            <div className="mt-5">
 
 
             {isGoogleSubmitting ? (
