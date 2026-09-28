@@ -6,6 +6,11 @@ type SearchType = 'khasra' | 'owner' | 'village';
 
 function StatusIcon({ status }: { status: LookupResult['status'] }) {
   const config = {
+    approved: {
+      icon: 'verified',
+      label: 'Approved',
+      className: 'bg-secondary-fixed text-on-secondary-fixed',
+    },
     verified: {
       icon: 'verified',
       label: 'Verified',
@@ -230,6 +235,7 @@ export default function LookupPage() {
   };
 
   const activeSearch = searchConfig[searchType];
+  const hasResults = results !== null && results.length > 0;
 
   return (
     <div className="mx-auto w-full max-w-6xl py-8 sm:py-12 lg:py-16">
@@ -418,24 +424,42 @@ export default function LookupPage() {
               </p>
             </div>
 
-            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-secondary-fixed px-3 py-2 text-xs font-semibold text-on-secondary-fixed">
-              <span className="material-symbols-outlined text-[17px] icon-fill">
-                verified
+            {hasResults && (
+              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-secondary-fixed px-3 py-2 text-xs font-semibold text-on-secondary-fixed">
+                <span className="material-symbols-outlined text-[17px] icon-fill">
+                  verified
+                </span>
+
+                Approved records available
+              </span>
+            )}
+
+          </div>
+
+          {hasResults ? (
+            <div className="mt-5 space-y-4">
+              {results.map((result) => (
+                <ResultCard
+                  key={`${result.khasraNo}-${result.ownerName}-${result.village}`}
+                  result={result}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-2xl border border-outline-variant/70 bg-surface-container-low p-8 text-center">
+              <span className="material-symbols-outlined text-4xl text-outline">
+                search_off
               </span>
 
-              Verified records available
-            </span>
+              <p className="mt-3 text-sm font-semibold text-on-surface">
+                No approved records found
+              </p>
 
-          </div>
-
-          <div className="mt-5 space-y-4">
-            {results.map((result) => (
-              <ResultCard
-                key={`${result.khasraNo}-${result.ownerName}`}
-                result={result}
-              />
-            ))}
-          </div>
+              <p className="mt-1 text-xs leading-5 text-on-surface-variant">
+                Try another search value for this search method.
+              </p>
+            </div>
+          )}
 
         </section>
       )}
