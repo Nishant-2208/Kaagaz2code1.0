@@ -1,7 +1,6 @@
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, Query
-from pymongo import ASCENDING
 
 from app.db.mongodb import get_db
 
@@ -28,6 +27,10 @@ def _serialize(value: Any) -> Any:
 @router.get("/")
 async def lookup(
     q: str = Query(..., min_length=1, max_length=100),
+    search_type: Literal["khasra", "owner", "village"] = Query(
+        default="khasra",
+        alias="type",
+    ),
     limit: int = Query(default=20, ge=1, le=50),
 ):
     db = get_db()
@@ -37,6 +40,7 @@ async def lookup(
     if not search:
         return {
             "query": q,
+            "type": search_type,
             "items": [],
             "count": 0,
         }
@@ -70,28 +74,34 @@ async def lookup(
         land = extraction.get("land_details") or {}
         ownership = extraction.get("ownership_details") or {}
 
-        searchable_values = [
-            location.get("village"),
-            location.get("tehsil"),
-            location.get("district"),
-            identifiers.get("survey_number"),
-            identifiers.get("khasra_number"),
-            identifiers.get("khata_number"),
-            ownership.get("landowner_name"),
-        ]
+        if search_type == "owner":
+            searchable_values = [
+                ownership.get("landowner_name"),
+            ]
+        elif search_type == "village":
+            searchable_values = [
+                location.get("village"),
+            ]
+        else:
+            searchable_values = [
+                identifiers.get("survey_number"),
+                identifiers.get("khasra_number"),
+                identifiers.get("khata_number"),
+            ]
 
         searchable_text = " ".join(
             str(value)
             for value in searchable_values
             if value is not None
-        ).lower()
+        ).casefold()
 
-        if search.lower() not in searchable_text:
+        if search.casefold() not in searchable_text:
             continue
 
         items.append(
             {
                 "document_id": document_id,
+                "status": "approved",
                 "location_details": location,
                 "land_identifiers": identifiers,
                 "land_details": land,
@@ -114,6 +124,7 @@ async def lookup(
 
     return {
         "query": q,
+        "type": search_type,
         "items": [_serialize(item) for item in items],
         "count": len(items),
     }
