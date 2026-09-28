@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockQueueItems } from '../api/mockData';
+import { getQueueItems } from '../api/services';
 import {
   StatusBadge,
   ConfidenceBadge,
@@ -50,11 +50,46 @@ export default function QueuePage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] =
     useState<QueueFilter>('all');
+  const [queueItems, setQueueItems] = useState<
+    Awaited<ReturnType<typeof getQueueItems>>
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadQueue() {
+      setIsLoading(true);
+      setLoadError('');
+
+      try {
+        const items = await getQueueItems();
+        if (!cancelled) setQueueItems(items);
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : 'Could not load the review queue.',
+          );
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    void loadQueue();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return mockQueueItems.filter((item) => {
+    return queueItems.filter((item) => {
       const matchesSearch =
         normalizedSearch === '' ||
         item.khasraNo.toLowerCase().includes(normalizedSearch) ||
@@ -71,39 +106,45 @@ export default function QueuePage() {
     });
   }, [search, statusFilter]);
 
-  const awaitingReviewCount = mockQueueItems.filter(
+  const awaitingReviewCount = queueItems.filter(
     (item) =>
       item.status === 'pending_review' ||
       item.status === 'in_review',
   ).length;
 
-  const conflictCount = mockQueueItems.filter(
+  const conflictCount = queueItems.filter(
     (item) =>
       item.status === 'flagged' ||
       item.status === 'discrepancy',
   ).length;
 
-  const verifiedCount = mockQueueItems.filter(
+  const verifiedCount = queueItems.filter(
     (item) =>
       item.status === 'verified' ||
       item.status === 'locked',
   ).length;
 
   function handleRecordClick(
-    id: string,
+    jobId: string,
+    recordId: string | undefined,
     status: RecordStatus,
   ) {
     if (status === 'discrepancy') {
-      navigate(`/discrepancy/${id}`);
+      navigate(`/discrepancy/${recordId ?? jobId}`);
       return;
     }
 
     if (status === 'locked' || status === 'verified') {
-      navigate(`/records/${id}`);
+      navigate(`/records/${recordId ?? jobId}`);
       return;
     }
 
-    navigate('/review');
+    navigate('/review', {
+      state: {
+        recordId: recordId ?? jobId,
+        batchId: jobId,
+      },
+    });
   }
 
   return (
@@ -133,7 +174,7 @@ export default function QueuePage() {
         </div>
 
         <div className="font-mono text-xs text-on-surface-variant">
-          {mockQueueItems.length} total records
+          {queueItems.length} total records
         </div>
 
       </header>
@@ -245,7 +286,7 @@ export default function QueuePage() {
 
         <div>
           <p className="font-mono text-xs text-outline">
-            Showing {filtered.length} of {mockQueueItems.length}
+            Showing {filtered.length} of {queueItems.length}
           </p>
         </div>
 
@@ -296,7 +337,29 @@ export default function QueuePage() {
 
         {/* Records */}
 
-        {filtered.length > 0 ? (
+        {isLoading ? (
+          <div className="flex min-h-[280px] items-center justify-center px-6 py-12 text-center">
+            <p className="text-sm text-on-surface-variant">
+              Loading review queue…
+            </p>
+          </div>
+        ) : loadError ? (
+          <div className="flex min-h-[280px] flex-col items-center justify-center px-6 py-12 text-center">
+            <p className="text-sm font-semibold text-on-surface">
+              Could not load the review queue
+            </p>
+            <p className="mt-2 max-w-lg text-xs leading-5 text-on-surface-variant">
+              {loadError}
+            </p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-4 rounded-lg border border-outline-variant px-4 py-2.5 text-xs font-semibold text-on-surface hover:bg-surface-container"
+            >
+              Retry
+            </button>
+          </div>
+        ) : filtered.length > 0 ? (
 
           <div className="divide-y divide-outline-variant">
 
@@ -308,6 +371,7 @@ export default function QueuePage() {
                 onClick={() =>
                   handleRecordClick(
                     item.id,
+                    item.recordId,
                     item.status,
                   )
                 }
