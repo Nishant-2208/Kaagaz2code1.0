@@ -1,64 +1,175 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { mockAuditTrail, mockRecords } from '../api/mockData';
-import type { AuditTrailEntry } from '../api/types';
+import {
+  downloadDocument,
+  getAuditTrail,
+  getRecordById,
+} from '../api/services';
+import type {
+  AuditTrailEntry,
+  LandRecord,
+} from '../api/types';
 
 export default function RecordDetailPage() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const record =
-    mockRecords.find((item) => item.id === id) ??
-    mockRecords[0];
+  const [record, setRecord] = useState<LandRecord | null>(null);
+  const [auditEntries, setAuditEntries] = useState<AuditTrailEntry[]>([]);
+  const [documentUrl, setDocumentUrl] = useState('');
+  const [documentType, setDocumentType] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    let objectUrl = '';
+
+    async function loadRecord() {
+      if (!id) {
+        setLoadError('Record ID is missing.');
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setLoadError('');
+
+      try {
+        const [loadedRecord, audit] = await Promise.all([
+          getRecordById(id),
+          getAuditTrail(id),
+        ]);
+
+        if (!loadedRecord) {
+          throw new Error('Record not found.');
+        }
+
+        if (!cancelled) {
+          setRecord(loadedRecord);
+          setAuditEntries(audit);
+        }
+
+        try {
+          const blob = await downloadDocument(id);
+          objectUrl = URL.createObjectURL(blob);
+
+          if (!cancelled) {
+            setDocumentUrl(objectUrl);
+            setDocumentType(blob.type || '');
+          }
+        } catch {
+          // Metadata remains usable even if the original file cannot be
+          // downloaded by the current role.
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : 'Could not load this record.',
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadRecord();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [id]);
 
   const verified =
-    record.status === 'verified' ||
-    record.status === 'locked';
+    record?.status === 'verified' ||
+    record?.status === 'approved' ||
+    record?.status === 'locked';
 
-  const formattedUpdatedAt = new Date(
-    record.updatedAt,
-  ).toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
+  const formattedUpdatedAt = useMemo(
+    () =>
+      record
+        ? new Date(record.updatedAt).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          })
+        : '—',
+    [record],
+  );
 
-  const recordFields = [
-    {
-      label: 'Khasra / Survey No.',
-      value: record.khasraNo,
-    },
-    {
-      label: 'Owner',
-      value: record.ownerName,
-    },
-    {
-      label: 'Area',
-      value: `${record.area} ${record.areaUnit}`,
-    },
-    {
-      label: 'Village',
-      value: record.village,
-    },
-    {
-      label: 'Tehsil',
-      value: record.tehsil,
-    },
-    {
-      label: 'District',
-      value: record.district,
-    },
-    {
-      label: 'Registration Date',
-      value: record.registrationDate,
-    },
-    {
-      label: 'Land Type',
-      value: record.landType ?? 'Agricultural',
-    },
-  ];
+  const recordFields = useMemo(
+    () =>
+      record
+        ? [
+            {
+              label: 'Khasra / Survey No.',
+              value: record.khasraNo,
+            },
+            {
+              label: 'Owner',
+              value: record.ownerName,
+            },
+            {
+              label: 'Area',
+              value: `${record.area} ${record.areaUnit}`,
+            },
+            {
+              label: 'Village',
+              value: record.village,
+            },
+            {
+              label: 'Tehsil',
+              value: record.tehsil,
+            },
+            {
+              label: 'District',
+              value: record.district,
+            },
+            {
+              label: 'Registration Date',
+              value: record.registrationDate,
+            },
+            {
+              label: 'Land Type',
+              value: record.landType ?? 'Agricultural',
+            },
+          ]
+        : [],
+    [record],
+  );
 
-  const auditEntries: AuditTrailEntry[] =
-    mockAuditTrail;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center text-sm text-on-surface-variant">
+        Loading record from FastAPI…
+      </div>
+    );
+  }
+
+  if (loadError || !record) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-6 text-center">
+        <p className="text-sm font-semibold text-error">
+          Could not load record
+        </p>
+        <p className="mt-2 text-sm text-on-surface-variant">
+          {loadError || 'Record not found.'}
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate('/records')}
+          className="mt-5 rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold"
+        >
+          Back to Records
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
@@ -213,11 +324,26 @@ export default function RecordDetailPage() {
 
               <div className="overflow-hidden rounded-lg border border-outline-variant bg-white">
 
-                <img
-                  src={record.sourceImageUrl}
-                  alt="Original scanned land record"
-                  className="block h-auto w-full object-contain"
-                />
+                {documentUrl ? (
+                  documentType.includes('pdf') ? (
+                    <iframe
+                      src={documentUrl}
+                      title="Original scanned land record"
+                      className="h-[760px] w-full bg-white"
+                    />
+                  ) : (
+                    <img
+                      src={documentUrl}
+                      alt="Original scanned land record"
+                      className="block h-auto w-full object-contain"
+                    />
+                  )
+                ) : (
+                  <div className="flex min-h-64 items-center justify-center p-6 text-center text-xs text-on-surface-variant">
+                    Original document preview is unavailable. Use Open Review
+                    to access the protected source document.
+                  </div>
+                )}
 
               </div>
 
