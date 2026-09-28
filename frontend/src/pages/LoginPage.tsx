@@ -640,7 +640,7 @@ export default function LoginPage() {
               Sign in securely with your Google account
             </p>
 
-          </div>
+            </div>
           )}
 
 
