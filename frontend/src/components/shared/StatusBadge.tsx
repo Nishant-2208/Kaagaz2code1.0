@@ -28,11 +28,46 @@ const STATUS_CONFIG: Record<
       'bg-warning-container text-on-warning-container border-warning',
   },
 
+  needs_review: {
+    label: 'Needs Review',
+    icon: 'rate_review',
+    classes:
+      'bg-warning-container text-on-warning-container border-warning',
+  },
+
   verified: {
     label: 'Verified',
     icon: 'verified',
     classes:
       'bg-secondary-fixed text-on-secondary-fixed border-secondary',
+  },
+
+  approved: {
+    label: 'Approved',
+    icon: 'verified',
+    classes:
+      'bg-success-container text-on-success-container border-success',
+  },
+
+  rejected: {
+    label: 'Rejected',
+    icon: 'cancel',
+    classes:
+      'bg-error-container text-on-error-container border-error',
+  },
+
+  processing: {
+    label: 'Processing',
+    icon: 'sync',
+    classes:
+      'bg-surface-container-high text-on-surface-variant border-outline-variant',
+  },
+
+  failed: {
+    label: 'Failed',
+    icon: 'error',
+    classes:
+      'bg-error-container text-on-error-container border-error',
   },
 
   flagged: {
@@ -62,7 +97,7 @@ export default function StatusBadge({
   size = 'sm',
   showIcon = true,
 }: StatusBadgeProps) {
-  const config = STATUS_CONFIG[status];
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending_review;
 
   const sizeClasses =
     size === 'sm'
