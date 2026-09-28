@@ -4,6 +4,7 @@ import {
   getExtractedFields,
   getRecordById,
   getRecords,
+  downloadDocument,
   submitReviewDecision,
   submitRecordReview,
 } from '../api/services';
@@ -23,6 +24,8 @@ export default function ReviewPage() {
   const [record, setRecord] = useState<LandRecord | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [sourcePreviewUrl, setSourcePreviewUrl] = useState<string | null>(null);
+  const [sourcePreviewType, setSourcePreviewType] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
@@ -67,6 +70,26 @@ export default function ReviewPage() {
             editedValue: field.editedValue ?? field.value,
           })),
         );
+
+        try {
+          const sourceBlob = await downloadDocument(resolvedRecord.id);
+          const sourceUrl = URL.createObjectURL(sourceBlob);
+
+          if (!cancelled) {
+            setSourcePreviewUrl((previous) => {
+              if (previous) URL.revokeObjectURL(previous);
+              return sourceUrl;
+            });
+            setSourcePreviewType(sourceBlob.type || '');
+          } else {
+            URL.revokeObjectURL(sourceUrl);
+          }
+        } catch {
+          if (!cancelled) {
+            setSourcePreviewUrl(null);
+            setSourcePreviewType('');
+          }
+        }
       } catch {
         if (!cancelled) {
           setLoadError(
@@ -84,6 +107,14 @@ export default function ReviewPage() {
       cancelled = true;
     };
   }, [recordId]);
+
+  useEffect(() => {
+    return () => {
+      if (sourcePreviewUrl) {
+        URL.revokeObjectURL(sourcePreviewUrl);
+      }
+    };
+  }, [sourcePreviewUrl]);
 
   const lowConfidenceCount = fields.filter(
     (field) => field.confidence < 90,
@@ -332,11 +363,35 @@ export default function ReviewPage() {
 
             <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-xl border border-outline-variant bg-white shadow-[0_6px_20px_rgba(15,23,42,0.10)]">
 
-              <img
-                src={record.sourceImageUrl}
-                alt="Original scanned land record"
-                className="block h-auto w-full object-contain"
-              />
+              {sourcePreviewUrl ? (
+                sourcePreviewType.includes('pdf') ? (
+                  <iframe
+                    src={sourcePreviewUrl}
+                    title="Original scanned land record"
+                    className="block h-[760px] w-full border-0 bg-white"
+                  />
+                ) : (
+                  <img
+                    src={sourcePreviewUrl}
+                    alt="Original scanned land record"
+                    className="block h-auto max-h-[760px] w-full object-contain"
+                  />
+                )
+              ) : (
+                <div className="flex min-h-[420px] items-center justify-center px-6 text-center">
+                  <div>
+                    <span className="material-symbols-outlined text-4xl text-outline">
+                      image_not_supported
+                    </span>
+                    <p className="mt-3 text-sm font-semibold text-on-surface">
+                      Source document preview unavailable
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-on-surface-variant">
+                      The original file is still stored securely in the backend.
+                    </p>
+                  </div>
+                </div>
+              )
 
             </div>
 
