@@ -899,39 +899,82 @@ export async function getQueueItems(): Promise<QueueItem[]> {
   if (USE_MOCKS) return mockDelay(mockQueueItems);
 
   const data = await request<any>(`${API_BASE}/queue/`);
-  return (data?.jobs ?? []).map((job: any) => {
-    const result = job.result ?? {};
-    const extraction = result.extraction ?? {};
-    const identifiers = extraction.land_identifiers ?? {};
-    const location = extraction.location_details ?? {};
-    const ownership = extraction.ownership_details ?? {};
+  const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
+
+  return jobs.map((job: any) => {
+    // The AI service stores the extraction inside the completed
+    // processing-job result. Accept both the canonical envelope and
+    // direct extraction payloads so the queue never loses OCR data.
+    const result = getProcessingResult(job) ?? {};
+    const extraction =
+      result?.extraction ??
+      (result?.location_details ||
+      result?.land_identifiers ||
+      result?.land_details ||
+      result?.ownership_details ||
+      result?.confidence_scores
+        ? result
+        : {});
+
+    const identifiers = extraction?.land_identifiers ?? {};
+    const location = extraction?.location_details ?? {};
+    const land = extraction?.land_details ?? {};
+    const ownership = extraction?.ownership_details ?? {};
     const confidence = asConfidencePercent(
-      extraction.confidence_scores?.overall_confidence,
+      extraction?.confidence_scores?.overall_confidence ??
+      result?.confidence ??
+      job?.confidence,
       0,
     );
 
+    const documentId = asText(job?.document_id);
+    const jobId = asText(job?.job_id);
+
+    const rawStatus =
+      job?.document_status ??
+      (job?.status === 'completed'
+        ? result?.status ?? 'needs_review'
+        : job?.status);
+
     return {
-      // IMPORTANT: the queue row represents a processing job, but ReviewPage
-      // loads the record using the document ID. Keep both IDs.
-      id: asText(job.job_id),
-      recordId: asText(job.document_id),
+      // Display the actual land-record/document ID. Keep the processing
+      // job ID separately for workflow/debugging.
+      id: documentId || jobId,
+      recordId: documentId || undefined,
+
       khasraNo: asText(
-        identifiers.khasra_number ??
-        identifiers.survey_number ??
-        identifiers.khata_number,
+        identifiers?.khasra_number ??
+        identifiers?.khasra_no ??
+        identifiers?.survey_number ??
+        identifiers?.survey_no ??
+        identifiers?.khata_number ??
+        '—',
       ),
-      ownerName: asText(ownership.landowner_name),
-      village: asText(location.village),
-      district: asText(location.district),
-      status: recordStatus(
-        job.status === 'completed'
-          ? job.result?.status ?? 'needs_review'
-          : job.status,
+
+      ownerName: asText(
+        ownership?.landowner_name ??
+        ownership?.owner_name ??
+        ownership?.owner ??
+        '—',
       ),
+
+      village: asText(
+        location?.village ??
+        location?.village_name ??
+        '—',
+      ),
+
+      district: asText(
+        location?.district ??
+        location?.district_name ??
+        '—',
+      ),
+
+      status: recordStatus(rawStatus),
       confidence,
       assignedTo: undefined,
-      createdAt: asText(job.created_at),
-      batchId: asText(job.job_id),
+      createdAt: asText(job?.created_at ?? new Date().toISOString()),
+      batchId: jobId,
     };
   });
 }
