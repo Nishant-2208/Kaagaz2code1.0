@@ -10,6 +10,7 @@ import {
 } from '../api/services';
 import type { ExtractedField, LandRecord } from '../api/types';
 import { ConfidenceBadge } from '../components/shared';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LocationState {
   recordId?: string;
@@ -20,6 +21,8 @@ export default function ReviewPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { recordId } = (location.state as LocationState) ?? {};
+  const { user } = useAuth();
+  const canDecide = user?.role === 'reviewer' || user?.role === 'admin';
 
   const [record, setRecord] = useState<LandRecord | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -331,13 +334,13 @@ export default function ReviewPage() {
           REVIEW WORKSPACE
       ===================================================== */}
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(420px,1.05fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(480px,0.92fr)]">
 
         {/* ===================================================
             SOURCE DOCUMENT
             =================================================== */}
 
-        <section className="flex min-h-[620px] flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-[0_4px_18px_rgba(15,23,42,0.05)]">
+        <section className="flex min-h-[760px] flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-[0_4px_18px_rgba(15,23,42,0.05)]">
 
           <div className="flex flex-col gap-3 border-b border-outline-variant bg-surface-container-low px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
 
@@ -361,20 +364,20 @@ export default function ReviewPage() {
 
           <div className="flex-1 overflow-auto bg-[#f3f4f6] p-4 sm:p-6">
 
-            <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-xl border border-outline-variant bg-white shadow-[0_6px_20px_rgba(15,23,42,0.10)]">
+            <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-xl border border-outline-variant bg-white shadow-[0_6px_20px_rgba(15,23,42,0.10)]">
 
               {sourcePreviewUrl ? (
                 sourcePreviewType.includes('pdf') ? (
                   <iframe
                     src={sourcePreviewUrl}
                     title="Original scanned land record"
-                    className="block h-[760px] w-full border-0 bg-white"
+                    className="block h-[calc(100vh-250px)] min-h-[760px] w-full border-0 bg-white
                   />
                 ) : (
                   <img
                     src={sourcePreviewUrl}
                     alt="Original scanned land record"
-                    className="block h-auto max-h-[760px] w-full object-contain"
+                    className="block h-auto max-h-[calc(100vh-250px)] min-h-[760px] w-full object-contain"
                   />
                 )
               ) : (
@@ -665,16 +668,17 @@ export default function ReviewPage() {
 
           </div>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-
-            <button
-              type="button"
-              onClick={handleReject}
-              disabled={isSubmitting}
-              className="min-h-11 rounded-lg border border-error/30 px-5 text-xs font-semibold text-error transition-colors hover:bg-error-container disabled:opacity-50"
-            >
-              Reject
-            </button>
+          <div className={canDecide ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : 'grid grid-cols-1 gap-2 sm:grid-cols-1 sm:min-w-[240px]'}>
+            {canDecide && (
+              <button
+                type="button"
+                onClick={handleReject}
+                disabled={isSubmitting}
+                className="min-h-11 rounded-lg border border-error/30 px-5 text-xs font-semibold text-error transition-colors hover:bg-error-container disabled:opacity-50"
+              >
+                Reject
+              </button>
+            )}
 
             <button
               type="button"
@@ -682,18 +686,19 @@ export default function ReviewPage() {
               disabled={isSubmitting}
               className="min-h-11 rounded-lg border border-outline-variant px-5 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container disabled:opacity-50"
             >
-              Save & Exit
+              {user?.role === 'officer' ? 'Save Corrections & Exit' : 'Save & Exit'}
             </button>
 
-            <button
-              type="button"
-              onClick={handleApprove}
-              disabled={isSubmitting}
-              className="min-h-11 rounded-lg bg-primary px-5 text-xs font-semibold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving…' : 'Approve & Verify'}
-            </button>
-
+            {canDecide && (
+              <button
+                type="button"
+                onClick={handleApprove}
+                disabled={isSubmitting}
+                className="min-h-11 rounded-lg bg-primary px-5 text-xs font-semibold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-50"
+              >
+                {isSubmitting ? 'Saving…' : 'Approve & Verify'}
+              </button>
+            )}
           </div>
 
         </div>
