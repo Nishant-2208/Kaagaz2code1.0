@@ -23,10 +23,8 @@ async def connect_to_mongodb() -> None:
 
     client = AsyncIOMotorClient(
         settings.mongodb_uri,
-        serverSelectionTimeoutMS=5000,
+        serverSelectionTimeoutMS=3000,
     )
-
-    await client.admin.command("ping")
 
     database = client[
         settings.mongodb_database
@@ -38,12 +36,18 @@ async def connect_to_mongodb() -> None:
         bucket_name="documents",
     )
 
-    print(
-        "MongoDB connected successfully: "
-        f"{settings.mongodb_database}"
-    )
-
-    await create_indexes()
+    try:
+        await client.admin.command("ping")
+        print(
+            "MongoDB connected successfully: "
+            f"{settings.mongodb_database}"
+        )
+        await create_indexes()
+    except Exception as exc:
+        print(
+            f"WARNING: MongoDB ping failed ({exc}). "
+            "FastAPI backend started, but MongoDB operations will require an active MongoDB connection."
+        )
 
 
 # =========================================================
@@ -68,11 +72,19 @@ async def close_mongodb() -> None:
 # =========================================================
 
 def get_db() -> AsyncIOMotorDatabase:
+    global client, database, gridfs_bucket
     if database is None:
-        raise RuntimeError(
-            "MongoDB is not connected."
-        )
-
+        if client is None:
+            client = AsyncIOMotorClient(
+                settings.mongodb_uri,
+                serverSelectionTimeoutMS=3000,
+            )
+        database = client[settings.mongodb_database]
+        if gridfs_bucket is None:
+            gridfs_bucket = AsyncIOMotorGridFSBucket(
+                database,
+                bucket_name="documents",
+            )
     return database
 
 
@@ -81,11 +93,9 @@ def get_db() -> AsyncIOMotorDatabase:
 # =========================================================
 
 def get_gridfs_bucket() -> AsyncIOMotorGridFSBucket:
+    global gridfs_bucket
     if gridfs_bucket is None:
-        raise RuntimeError(
-            "MongoDB GridFS is not connected."
-        )
-
+        get_db()
     return gridfs_bucket
 
 
