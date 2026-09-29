@@ -199,7 +199,7 @@ export default function DiscrepancyPage() {
 
         <div className="mb-4">
 
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
             Evidence Comparison
           </p>
 
@@ -315,11 +315,11 @@ export default function DiscrepancyPage() {
           DECISION AREA
       ===================================================== */}
 
-      <section className="mt-6 rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+      <section className="mt-6 rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
 
         <div className="border-b border-outline-variant/70 px-5 py-4 sm:px-6">
 
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
             Resolution Decision
           </p>
 
@@ -339,7 +339,7 @@ export default function DiscrepancyPage() {
 
           {/* Selected source */}
 
-          <div className="rounded-lg border border-outline-variant/70 bg-surface-container-low px-4 py-4">
+          <div className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9] px-4 py-4">
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
@@ -415,7 +415,7 @@ export default function DiscrepancyPage() {
           SAFETY NOTE
       ===================================================== */}
 
-      <div className="mt-5 rounded-lg border border-outline-variant/70 bg-surface-container-low px-5 py-4">
+      <div className="mt-5 rounded-xl border border-outline-variant/70 bg-[#f4f6f9] px-5 py-4">
 
         <p className="text-xs font-semibold text-on-surface">
           Verification safeguard
@@ -436,7 +436,7 @@ export default function DiscrepancyPage() {
       {showEscalation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
 
-          <div className="w-full max-w-lg rounded-xl border border-outline-variant bg-surface-container-lowest shadow-xl">
+          <div className="w-full max-w-lg rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est shadow-xl">
 
             <div className="border-b border-outline-variant px-5 py-4">
 
@@ -469,7 +469,7 @@ export default function DiscrepancyPage() {
                 }
                 rows={4}
                 placeholder="Explain why this conflict requires further review."
-                className="mt-2 w-full resize-none rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-3 text-sm text-on-surface outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+                className="mt-2 w-full resize-none rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est px-3 py-3 text-sm text-on-surface outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
               />
 
             </div>
@@ -690,7 +690,7 @@ function SourceEvidence({
 
       </div>
 
-      <div className="mt-3 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low">
+      <div className="mt-3 overflow-hidden rounded-xl border border-outline-variant/70 bg-[#f4f6f9]">
 
         {imageUrl ? (
           <img
@@ -813,7 +813,7 @@ function ResolvedState({
   return (
     <div className="mx-auto flex min-h-[65vh] w-full max-w-2xl items-center justify-center px-4 py-10">
 
-      <div className="w-full rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-6 text-center sm:p-8">
+      <div className="w-full rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] p-6 text-center sm:p-8">
 
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
 
