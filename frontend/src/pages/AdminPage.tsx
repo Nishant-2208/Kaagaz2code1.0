@@ -108,7 +108,7 @@ export default function AdminPage() {
       <header className="mb-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-primary">
               Administration
             </p>
 
@@ -125,7 +125,7 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={() => void loadDashboard()}
-            className="w-fit rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2 text-xs font-semibold text-on-surface transition hover:bg-surface-container"
+            className="w-fit rounded-xl border border-outline-variant/70 bg-[#f4f6f9] px-4 py-2 text-xs font-semibold text-on-surface transition hover:bg-surface-container"
           >
             Refresh dashboard
           </button>
@@ -161,10 +161,10 @@ export default function AdminPage() {
 
       <section className="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,0.8fr)]">
 
-        <section className="rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-5 sm:p-6">
+        <section className="rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] p-5 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                 Processing quality
               </p>
 
@@ -253,11 +253,11 @@ export default function AdminPage() {
         </section>
       </section>
 
-      <section className="mb-6 rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+      <section className="mb-6 rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
         <div className="border-b border-outline-variant/70 px-5 py-5 sm:px-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                 Document processing
               </p>
 
@@ -284,7 +284,7 @@ export default function AdminPage() {
 
         <div className="space-y-4 p-5 sm:p-6">
           {batches.length === 0 ? (
-            <div className="rounded-lg border border-outline-variant/70 bg-surface-container-low p-8 text-center text-sm text-on-surface-variant">
+            <div className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9] p-8 text-center text-sm text-on-surface-variant">
               No processing jobs found.
             </div>
           ) : (
@@ -306,7 +306,7 @@ export default function AdminPage() {
               return (
                 <div
                   key={batch.id}
-                  className="rounded-lg border border-outline-variant/70 bg-surface-container-low p-4 sm:p-5"
+                  className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9] p-4 sm:p-5"
                 >
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="min-w-0">
@@ -366,9 +366,9 @@ export default function AdminPage() {
         </div>
       </section>
 
-      <section className="mb-6 rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+      <section className="mb-6 rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
         <div className="border-b border-outline-variant/70 px-5 py-5 sm:px-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
             Operations
           </p>
 
@@ -384,7 +384,7 @@ export default function AdminPage() {
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[700px] text-left">
             <thead>
-              <tr className="border-b border-outline-variant/70 bg-surface-container-low">
+              <tr className="border-b border-outline-variant/70 bg-[#eef1f4]-low">
                 <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant">
                   Officer ID
                 </th>
@@ -431,7 +431,7 @@ export default function AdminPage() {
           {officers.map((officer) => (
             <div
               key={officer.id}
-              className="rounded-lg border border-outline-variant/70 bg-surface-container-low p-4"
+              className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9] p-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -467,7 +467,7 @@ export default function AdminPage() {
         )}
       </section>
 
-      <section className="rounded-lg border border-outline-variant/70 bg-surface-container-low px-5 py-4 sm:px-6">
+      <section className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9] px-5 py-4 sm:px-6">
         <p className="text-sm font-semibold text-on-surface">
           Administrative monitoring
         </p>
@@ -496,7 +496,7 @@ function MetricCard({
   emphasis = false,
 }: MetricCardProps) {
   return (
-    <article className="rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-5">
+    <article className="rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] p-5">
       <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant">
         {label}
       </p>
