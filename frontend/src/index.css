@@ -1,143 +1,75 @@
 @import "tailwindcss";
 
-/* =========================================================
-   KAAGAZ2CODE — GLOBAL DESIGN SYSTEM
-   React + Vite + Tailwind CSS v4
-
-   This file controls:
-   - global colors
-   - typography
-   - Material Symbols
-   - base document behaviour
-   - shared utility classes
-   - accessibility defaults
-   - Leaflet integration
-   ========================================================= */
-
 @theme {
-  /* =======================================================
-     PRIMARY
-     ======================================================= */
-
-  --color-primary: #000666;
-  --color-primary-container: #1a237e;
-  --color-primary-fixed: #e0e0ff;
-  --color-primary-fixed-dim: #bdc2ff;
+  --color-primary: #123b72;
+  --color-primary-container: #0b2d55;
+  --color-primary-fixed: #e5eef8;
+  --color-primary-fixed-dim: #c8d9ec;
 
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #8690ee;
-  --color-on-primary-fixed: #000767;
-  --color-on-primary-fixed-variant: #343d96;
+  --color-on-primary-container: #dce9f7;
+  --color-on-primary-fixed: #0b2d55;
+  --color-on-primary-fixed-variant: #294f7d;
+  --color-inverse-primary: #b7d1ec;
 
-  --color-inverse-primary: #bdc2ff;
-
-  /* =======================================================
-     SECONDARY
-     ======================================================= */
-
-  --color-secondary: #4355b9;
-  --color-secondary-container: #8596ff;
-  --color-secondary-fixed: #dee0ff;
-  --color-secondary-fixed-dim: #bac3ff;
-
+  --color-secondary: #168548;
+  --color-secondary-container: #dff2e7;
+  --color-secondary-fixed: #e2f4e9;
+  --color-secondary-fixed-dim: #c4e5d1;
   --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #11278e;
-  --color-on-secondary-fixed: #00105c;
-  --color-on-secondary-fixed-variant: #293ca0;
+  --color-on-secondary-container: #0b4d2a;
+  --color-on-secondary-fixed: #0b4d2a;
+  --color-on-secondary-fixed-variant: #12673a;
 
-  /* =======================================================
-     TERTIARY
-     ======================================================= */
-
-  --color-tertiary: #380b00;
-  --color-tertiary-container: #5c1800;
-  --color-tertiary-fixed: #ffdbd0;
-  --color-tertiary-fixed-dim: #ffb59d;
-
+  --color-tertiary: #b85f12;
+  --color-tertiary-container: #f8dfc7;
+  --color-tertiary-fixed: #fff0df;
+  --color-tertiary-fixed-dim: #f6d2ad;
   --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #e17c5a;
-  --color-on-tertiary-fixed: #390c00;
-  --color-on-tertiary-fixed-variant: #7b2e12;
+  --color-on-tertiary-container: #6f3300;
+  --color-on-tertiary-fixed: #6f3300;
+  --color-on-tertiary-fixed-variant: #934900;
 
-  /* =======================================================
-     SURFACE
-     ======================================================= */
-
-  --color-surface: #fbf9f8;
-  --color-surface-dim: #dbdad9;
-  --color-surface-bright: #fbf9f8;
-  --color-surface-variant: #e4e2e2;
-
-  --color-surface-container: #efeded;
-  --color-surface-container-low: #f5f3f3;
-  --color-surface-container-high: #e9e8e7;
-  --color-surface-container-highest: #e4e2e2;
+  --color-surface: #fbfaf7;
+  --color-surface-dim: #dededb;
+  --color-surface-bright: #ffffff;
+  --color-surface-variant: #e7e9ec;
+  --color-surface-container: #eef1f4;
+  --color-surface-container-low: #f4f6f8;
+  --color-surface-container-high: #e9edf1;
+  --color-surface-container-highest: #dfe5eb;
   --color-surface-container-lowest: #ffffff;
+  --color-surface-tint: #123b72;
 
-  --color-surface-tint: #4c56af;
+  --color-on-surface: #17202a;
+  --color-on-surface-variant: #536273;
+  --color-inverse-surface: #26313d;
+  --color-inverse-on-surface: #f5f7fa;
 
-  --color-on-surface: #1b1c1c;
-  --color-on-surface-variant: #454652;
+  --color-background: #fbfaf7;
+  --color-on-background: #17202a;
 
-  --color-inverse-surface: #303031;
-  --color-inverse-on-surface: #f2f0f0;
+  --color-outline: #718096;
+  --color-outline-variant: #d3dae2;
 
-  /* =======================================================
-     BACKGROUND
-     ======================================================= */
-
-  --color-background: #fbf9f8;
-  --color-on-background: #1b1c1c;
-
-  /* =======================================================
-     OUTLINES
-     ======================================================= */
-
-  --color-outline: #767683;
-  --color-outline-variant: #c6c5d4;
-
-  /* =======================================================
-     ERROR
-     ======================================================= */
-
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
-
+  --color-error: #b42318;
+  --color-error-container: #fce8e6;
   --color-on-error: #ffffff;
-  --color-on-error-container: #93000a;
+  --color-on-error-container: #8e1d13;
 
-  /* =======================================================
-     APPLICATION STATUS COLORS
-     ======================================================= */
-
-  --color-success: #0f9d58;
-  --color-success-bg: #e6f4ea;
-
-  --color-warning: #e65100;
-  --color-warning-bg: #fff3e0;
-
-  --color-danger: #d93025;
+  --color-success: #168548;
+  --color-success-bg: #e2f4e9;
+  --color-warning: #d97706;
+  --color-warning-bg: #fff4df;
+  --color-danger: #b42318;
   --color-danger-bg: #fce8e6;
-
-  /* =======================================================
-     TYPOGRAPHY
-     ======================================================= */
 
   --font-headline: "Hanken Grotesk", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* =======================================================
-     RADIUS
-     ======================================================= */
-
   --radius-pill: 9999px;
 }
-
-
-/* =========================================================
-   GLOBAL RESET
-   ========================================================= */
 
 *,
 *::before,
@@ -156,14 +88,11 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-
   font-family: var(--font-body);
   background-color: var(--color-surface);
   color: var(--color-on-surface);
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
   text-rendering: optimizeLegibility;
 }
 
@@ -204,11 +133,6 @@ a {
   background: var(--color-primary-fixed);
   color: var(--color-on-primary-fixed);
 }
-
-
-/* =========================================================
-   TYPOGRAPHY
-   ========================================================= */
 
 .text-style-display-lg {
   font-family: var(--font-headline);
@@ -268,63 +192,35 @@ a {
   text-transform: uppercase;
 }
 
-
-/* =========================================================
-   MATERIAL SYMBOLS
-   ========================================================= */
-
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined";
-
   font-weight: normal;
   font-style: normal;
-
   font-size: 24px;
   line-height: 1;
-
   letter-spacing: normal;
   text-transform: none;
-
   display: inline-block;
   white-space: nowrap;
-
   word-wrap: normal;
   direction: ltr;
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
   text-rendering: optimizeLegibility;
-
   font-feature-settings: "liga";
-
-  font-variation-settings:
-    "FILL" 0,
-    "wght" 400,
-    "GRAD" 0,
-    "opsz" 24;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
 }
 
 .icon-fill {
-  font-variation-settings:
-    "FILL" 1,
-    "wght" 400,
-    "GRAD" 0,
-    "opsz" 24;
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
 }
 
-
-/* =========================================================
-   SHARED UTILITY CLASSES
-   ========================================================= */
-
 .card-border {
-  border: 1px solid #e0e0e0;
+  border: 1px solid #d3dae2;
 }
 
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom,
-      0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .text-balance {
@@ -336,11 +232,6 @@ a {
   word-break: break-word;
 }
 
-
-/* =========================================================
-   FOCUS / ACCESSIBILITY
-   ========================================================= */
-
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -350,11 +241,6 @@ button:focus:not(:focus-visible),
 a:focus:not(:focus-visible) {
   outline: none;
 }
-
-
-/* =========================================================
-   FORM NORMALIZATION
-   ========================================================= */
 
 input::placeholder,
 textarea::placeholder {
@@ -370,11 +256,6 @@ input[type="checkbox"],
 input[type="radio"] {
   accent-color: var(--color-primary);
 }
-
-
-/* =========================================================
-   SCROLLBARS
-   ========================================================= */
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -394,19 +275,10 @@ input[type="radio"] {
   background: var(--color-outline);
 }
 
-
-/* Firefox */
-
 * {
   scrollbar-width: thin;
-  scrollbar-color:
-    var(--color-outline-variant) transparent;
+  scrollbar-color: var(--color-outline-variant) transparent;
 }
-
-
-/* =========================================================
-   LEAFLET
-   ========================================================= */
 
 .leaflet-container {
   width: 100%;
@@ -428,11 +300,6 @@ input[type="radio"] {
   font-family: var(--font-body);
 }
 
-
-/* =========================================================
-   RESPONSIVE TYPOGRAPHY
-   ========================================================= */
-
 @media (max-width: 640px) {
   .text-style-display-lg {
     font-size: 28px;
@@ -450,11 +317,6 @@ input[type="radio"] {
     font-size: 18px;
   }
 }
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   html {
