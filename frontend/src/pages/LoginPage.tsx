@@ -35,12 +35,12 @@ const ROLES: RoleConfig[] = [
   {
     role: 'officer',
     label: 'Revenue Officer',
-    badge: 'Khatoni & RoR Audits',
+    badge: 'Land Record Processing',
     icon: 'badge',
     defaultId: 'officer@kaagaz.dev',
     route: '/upload',
     description:
-      'Digitize legacy deeds, review OCR extractions, and resolve discrepancies.',
+      'Digitize land records, review AI-extracted fields, and resolve validation discrepancies.',
   },
 
   {
@@ -51,7 +51,7 @@ const ROLES: RoleConfig[] = [
     defaultId: 'admin@kaagaz.dev',
     route: '/admin',
     description:
-      'Monitor pipeline throughput, manage queues, and oversee audit logs.',
+      'Monitor processing workflows, manage access, and oversee audit activity.',
   },
 
   {
@@ -62,7 +62,7 @@ const ROLES: RoleConfig[] = [
     defaultId: 'reviewer@kaagaz.dev',
     route: '/review',
     description:
-      'Validate AI-extracted fields, record review decisions, and approve land records.',
+      'Validate AI-extracted fields, resolve discrepancies, and approve verified records.',
   },
 
   {
@@ -73,7 +73,7 @@ const ROLES: RoleConfig[] = [
     defaultId: 'citizen@kaagaz.dev',
     route: '/lookup',
     description:
-      'Search verified Khasra parcels, cadastral maps, and mutation status.',
+      'Search verified land records, cadastral information, and record status.',
   },
 ];
 
@@ -343,7 +343,7 @@ export default function LoginPage() {
                   Kaagaz2Code
                 </h1>
                 <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant sm:text-[11px]">
-                  Land Record Verification System
+                  AI-Powered Land Record Digitization & Validation
                 </p>
               </div>
 
@@ -353,12 +353,12 @@ export default function LoginPage() {
             <div className="space-y-1.5">
 
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">
-                National Land Records Modernization
+                AI-POWERED LAND RECORD DIGITIZATION & VALIDATION
               </p>
 
 
               <p className="text-sm leading-relaxed text-on-surface-variant">
-                Digitize legacy revenue deeds, extract multi-script Khatoni records with AI, and verify cadastral GIS boundaries on a secure platform.
+                Digitize legacy land records, extract structured fields with AI-powered OCR, detect inconsistencies, and maintain secure, auditable digital records.
               </p>
 
             </div>
@@ -373,7 +373,7 @@ export default function LoginPage() {
                   document_scanner
                 </span>
 
-                OpenCV + Tesseract OCR
+                OpenCV + PaddleOCR
 
               </span>
 
@@ -381,10 +381,21 @@ export default function LoginPage() {
               <span className="inline-flex items-center gap-1.5 rounded-md border border-outline-variant/60 bg-surface-container-low px-2.5 py-1 text-xs font-medium text-on-surface">
 
                 <span className="material-symbols-outlined text-sm text-primary">
-                  layers
+                  auto_awesome
                 </span>
 
-                Cadastral GIS Mapping
+                AI Field Extraction
+
+              </span>
+
+
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-outline-variant/60 bg-surface-container-low px-2.5 py-1 text-xs font-medium text-on-surface">
+
+                <span className="material-symbols-outlined text-sm text-primary">
+                  rule
+                </span>
+
+                Validation & Discrepancy Detection
 
               </span>
 
@@ -395,10 +406,9 @@ export default function LoginPage() {
                   verified
                 </span>
 
-                Audit Traceability
+                Audit-Ready Records
 
               </span>
-
 
             </div>
 
