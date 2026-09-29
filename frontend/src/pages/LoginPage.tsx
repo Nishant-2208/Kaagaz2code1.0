@@ -316,26 +316,26 @@ export default function LoginPage() {
   // =======================================================
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-[1040px] items-center justify-center px-4 py-6 sm:px-6">
+    <div className="mx-auto flex min-h-[calc(100vh-110px)] w-full max-w-[1180px] items-center justify-center px-4 py-8 sm:px-6 lg:py-12">
 
-      <div className="grid w-full grid-cols-1 items-center gap-8 rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-6 shadow-sm lg:grid-cols-[0.95fr_1.05fr] lg:p-10">
+      <div className="grid w-full grid-cols-1 items-stretch gap-0 overflow-hidden rounded-[28px] border border-outline-variant/70 bg-white shadow-[0_20px_60px_rgba(11,45,85,0.10)] lg:grid-cols-[0.92fr_1.08fr]">
 
 
         {/* =================================================
             LEFT PANEL
         ================================================= */}
 
-        <div className="flex h-full flex-col justify-between border-b border-outline-variant/60 pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-10">
+        <div className="flex h-full flex-col justify-between border-b border-outline-variant/60 bg-[linear-gradient(145deg,#eef4fb_0%,#f8fafc_58%,#fff9f1_100%)] p-6 pb-7 lg:border-b-0 lg:border-r lg:p-10">
 
           <div className="space-y-4">
 
 
-            <div className="flex items-center -ml-3">
+            <div className="flex items-center -ml-1">
 
               <img
-                src="/logo.jpeg"
+                src="/7c8c5500-3a65-4189-b42f-07d6d77a0f26.jpg"
                 alt="Kaagaz2Code Logo"
-                className="h-28 w-auto max-w-[340px] object-contain drop-shadow-xs"
+                className="h-24 w-auto max-w-[300px] rounded-xl object-contain drop-shadow-sm sm:h-28"
               />
 
             </div>
@@ -416,7 +416,7 @@ export default function LoginPage() {
             RIGHT PANEL
         ================================================= */}
 
-        <div className="flex flex-col justify-center lg:pl-2">
+        <div className="flex flex-col justify-center p-6 lg:p-10">
 
 
           <div className="mb-5">
@@ -437,7 +437,7 @@ export default function LoginPage() {
               ROLE SELECTOR
           ================================================= */}
 
-          <div className="grid grid-cols-2 gap-2 rounded-xl sm:grid-cols-4 border border-outline-variant/70 bg-surface-container-low p-1.5">
+          <div className="grid grid-cols-2 gap-2 rounded-2xl border border-outline-variant/70 bg-[#f4f6f9] p-1.5 sm:grid-cols-4">
 
 
             {ROLES.map(
@@ -459,7 +459,7 @@ export default function LoginPage() {
                       )
                     }
                     className={`flex flex-col items-center justify-center gap-1 rounded-lg px-2 py-2.5 text-center transition-all ${isActive
-                        ? 'bg-primary text-on-primary shadow-xs font-semibold'
+                        ? 'bg-primary text-on-primary shadow-sm font-semibold ring-1 ring-primary/10'
                         : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
                       }`}
                   >
@@ -486,7 +486,7 @@ export default function LoginPage() {
               ROLE STATUS
           ================================================= */}
 
-          <div className="mt-4 rounded-lg border border-outline-variant/60 bg-surface-container-low p-3">
+          <div className="mt-4 rounded-xl border border-primary/10 bg-primary-fixed/40 p-4">
 
             <div className="flex items-center justify-between">
 
@@ -532,7 +532,7 @@ export default function LoginPage() {
           )}
 
 
-          <div className="mt-5 rounded-lg border border-primary/15 bg-primary-fixed/20 px-3 py-2.5">
+          <div className="mt-5 rounded-xl border border-secondary/15 bg-secondary-fixed/45 px-4 py-3">
             <p className="text-[11px] leading-5 text-on-surface-variant">
               Development access is enabled for local integration testing. Password input is retained for the UI; authentication is handled by the FastAPI development login endpoint.
             </p>
@@ -567,7 +567,7 @@ export default function LoginPage() {
                 />
               </div>
             ) : (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-center text-[11px] leading-5 text-amber-800">
+              <div className="rounded-xl border border-[#f2d3a8] bg-[#fff7e9] px-3 py-2.5 text-center text-[11px] leading-5 text-[#7a4b0b]">
                 Google sign-in is ready, but the frontend Google client ID
                 is not configured in <span className="font-mono">.env</span>.
               </div>
@@ -728,7 +728,7 @@ export default function LoginPage() {
                     disabled={
                       isSubmitting
                     }
-                    className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-xs font-bold uppercase tracking-[0.06em] text-on-primary shadow-xs transition hover:opacity-95 disabled:opacity-50"
+                    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-bold uppercase tracking-[0.06em] text-on-primary shadow-sm transition hover:bg-primary-container hover:shadow-md disabled:opacity-50"
                   >
 
 
