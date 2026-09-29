@@ -20,7 +20,13 @@ if (!rootElement) {
 const googleClientId =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
-const app = googleClientId ? (
+const isGoogleConfigured =
+  Boolean(googleClientId) &&
+  !googleClientId.startsWith('<') &&
+  !googleClientId.includes('your-google-client-id') &&
+  googleClientId.includes('.apps.googleusercontent.com');
+
+const app = isGoogleConfigured ? (
   <GoogleOAuthProvider
     clientId={googleClientId}
   >

@@ -93,6 +93,12 @@ export default function LoginPage() {
   const googleClientId =
     import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
+  const isGoogleConfigured =
+    Boolean(googleClientId) &&
+    !googleClientId.startsWith('<') &&
+    !googleClientId.includes('your-google-client-id') &&
+    googleClientId.includes('.apps.googleusercontent.com');
+
 
   const [selectedRole, setSelectedRole] =
     useState<Role>('officer');
@@ -559,7 +565,7 @@ export default function LoginPage() {
               <div className="h-px flex-1 bg-outline-variant/60" />
             </div>
 
-            {googleClientId ? (
+            {isGoogleConfigured ? (
               <div className="flex w-full justify-center">
                 <GoogleLogin
                   onSuccess={() => undefined}
@@ -574,9 +580,35 @@ export default function LoginPage() {
                 />
               </div>
             ) : (
-              <div className="rounded-xl border border-[#f2d3a8] bg-[#fff7e9] px-3 py-2.5 text-center text-[11px] leading-5 text-[#7a4b0b]">
-                Google sign-in is ready, but the frontend Google client ID
-                is not configured in <span className="font-mono">.env</span>.
+              <div className="rounded-xl border border-amber-300 bg-amber-50/90 p-4 text-center text-xs text-amber-950 shadow-xs">
+                <p className="font-bold text-[12px] text-amber-900">
+                  Google Client ID Required
+                </p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-amber-800">
+                  Google rejected the request (<span className="font-mono font-semibold">Error 401: invalid_client</span>) because <span className="font-mono font-semibold">frontend/.env</span> currently contains a placeholder (<code className="font-mono bg-amber-100 px-1 py-0.5 rounded">&lt;your-google-client-id&gt;</code>).
+                </p>
+                <p className="mt-1 text-[11px] text-amber-700">
+                  To use live Google accounts, set your Google Cloud Client ID in <span className="font-mono">frontend/.env</span>.
+                </p>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setError('');
+                    setIsSubmitting(true);
+                    try {
+                      const user = await login('citizen@kaagaz.dev', '');
+                      navigate(getDestination(user.role));
+                    } catch (e) {
+                      setError(e instanceof Error ? e.message : 'Sign in failed');
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                  className="mt-3.5 inline-flex items-center justify-center gap-2 rounded-lg bg-[#b45309] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#92400e] transition"
+                >
+                  <span className="material-symbols-outlined text-sm">login</span>
+                  Continue as Citizen (Dev Mode)
+                </button>
               </div>
             )}
 
