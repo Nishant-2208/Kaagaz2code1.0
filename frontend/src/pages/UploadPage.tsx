@@ -202,7 +202,7 @@ export default function UploadPage() {
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-primary">
                 SIH Problem Statement 26018
               </span>
               <span className="rounded bg-primary-fixed px-2 py-0.5 text-[10px] font-bold text-primary">
@@ -232,7 +232,7 @@ export default function UploadPage() {
             LEFT — DOCUMENT INGESTION & LIVE INSPECTION
         =================================================== */}
         <div className="space-y-6">
-          <section className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest shadow-xs">
+          <section className="overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] shadow-xs">
             <div className="border-b border-outline-variant/70 px-5 py-4 sm:px-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-on-surface">
@@ -308,7 +308,7 @@ export default function UploadPage() {
               {/* FILE SELECTED & LIVE DOCUMENT PREVIEW */}
               {file && (
                 <div className="space-y-4">
-                  <div className="flex flex-col gap-4 rounded-xl border border-outline-variant bg-surface-container-low p-4 sm:flex-row sm:items-center">
+                  <div className="flex flex-col gap-4 rounded-xl border border-outline-variant/70 bg-[#f4f6f9] p-4 sm:flex-row sm:items-center">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary-fixed text-primary">
                       <span className="material-symbols-outlined text-2xl">
                         {isPdf ? 'picture_as_pdf' : 'description'}
@@ -440,7 +440,7 @@ export default function UploadPage() {
               {/* LOCATION GIS INTEGRATION CHECKBOX */}
               <label
                 htmlFor="location"
-                className="mt-4 flex cursor-pointer items-start gap-3 rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 transition hover:border-primary/40"
+                className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-outline-variant/70 bg-[#f4f6f9] px-4 py-3 transition hover:border-primary/40"
               >
                 <input
                   id="location"
@@ -462,7 +462,7 @@ export default function UploadPage() {
             </div>
 
             {/* ACTION FOOTER */}
-            <div className="flex flex-col gap-3 border-t border-outline-variant/70 bg-surface-container-low px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div className="flex flex-col gap-3 border-t border-outline-variant/70 bg-[#eef1f4]-low px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <p className="text-xs text-on-surface-variant">
                 {file
                   ? 'Scan loaded. Ready for OpenCV deskewing & OCR.'
@@ -477,7 +477,7 @@ export default function UploadPage() {
                   'flex min-h-10 items-center justify-center gap-2 rounded-lg px-6 text-xs font-bold transition shadow-xs',
                   !file || isProcessing
                     ? 'cursor-not-allowed bg-surface-container text-outline'
-                    : 'bg-primary text-on-primary hover:opacity-95',
+                    : 'bg-primary text-on-primary shadow-sm hover:bg-primary-container hover:shadow-md',
                 ].join(' ')}
               >
                 {isProcessing ? (
@@ -504,7 +504,7 @@ export default function UploadPage() {
             RIGHT — PIPELINE ARCHITECTURE (FOR JUDGES & AUDIT)
         =================================================== */}
         <aside className="space-y-4">
-          <section className="rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-5 shadow-xs">
+          <section className="rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] p-5 shadow-xs">
             <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
                 Dual Ingestion Pipeline
@@ -565,7 +565,7 @@ export default function UploadPage() {
             </div>
           </section>
 
-          <section className="rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-4 text-xs text-on-surface-variant shadow-xs">
+          <section className="rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] p-4 text-xs text-on-surface-variant shadow-xs">
             <span className="flex items-center gap-1.5 font-bold text-on-surface mb-1">
               <span className="material-symbols-outlined text-base text-primary">
                 verified_user
