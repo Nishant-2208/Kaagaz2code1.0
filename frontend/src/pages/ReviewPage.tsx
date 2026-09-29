@@ -643,7 +643,7 @@ export default function ReviewPage() {
           }
           rows={4}
           placeholder="Example: Checked owner name and survey number against the source document."
-          className="mt-4 w-full resize-y rounded-xl border border-outline-variant bg-surface-container-low px-4 py-3 text-sm text-on-surface outline-none transition-colors placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/10"
+          className="mt-4 w-full resize-y rounded-xl border border-outline-variant/70 bg-[#f4f6f9] px-4 py-3 text-sm text-on-surface outline-none transition-colors placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/10"
         />
 
       </section>
@@ -736,7 +736,7 @@ function SummaryCard({
   success?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
+    <div className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est p-5">
 
       <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-outline">
         {label}
