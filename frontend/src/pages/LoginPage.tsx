@@ -353,7 +353,7 @@ export default function LoginPage() {
             <div className="space-y-1.5">
 
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">
-                AI-POWERED LAND RECORD DIGITIZATION & VALIDATION
+                SECURE DIGITAL LAND RECORD WORKFLOW
               </p>
 
 
