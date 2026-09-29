@@ -330,13 +330,22 @@ export default function LoginPage() {
           <div className="space-y-4">
 
 
-            <div className="flex items-center -ml-1">
+            <div className="flex items-center gap-4 -ml-1">
 
               <img
                 src="/7c8c5500-3a65-4189-b42f-07d6d77a0f26.jpg"
                 alt="Kaagaz2Code Logo"
-                className="h-24 w-auto max-w-[300px] rounded-xl object-contain drop-shadow-sm sm:h-28"
+                className="h-24 w-24 shrink-0 rounded-xl object-contain drop-shadow-sm sm:h-28 sm:w-28"
               />
+
+              <div className="min-w-0">
+                <h1 className="font-headline text-2xl font-extrabold tracking-tight text-primary sm:text-3xl">
+                  Kaagaz2Code
+                </h1>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant sm:text-[11px]">
+                  Land Record Verification System
+                </p>
+              </div>
 
             </div>
 
@@ -803,7 +812,7 @@ export default function LoginPage() {
                       '/lookup',
                     )
                   }
-                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-xs font-bold uppercase tracking-[0.06em] text-on-primary shadow-xs transition hover:opacity-95"
+                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#0b2d55] px-4 text-xs font-bold uppercase tracking-[0.06em] text-white shadow-xs transition hover:bg-[#123f73]"
                 >
 
                   <span>
