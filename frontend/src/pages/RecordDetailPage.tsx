@@ -228,7 +228,7 @@ export default function RecordDetailPage() {
                   `/records/${record.id}/multilingual`,
                 )
               }
-              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-outline-variant bg-surface-container-lowest px-4 text-xs font-semibold text-on-surface transition hover:bg-surface-container"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est px-4 text-xs font-semibold text-on-surface transition hover:bg-surface-container"
             >
               Multilingual View
             </button>
@@ -253,7 +253,7 @@ export default function RecordDetailPage() {
           SUMMARY
       ===================================================== */}
 
-      <section className="mb-6 overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+      <section className="mb-6 overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
 
         <div className="grid grid-cols-2 divide-x divide-y divide-outline-variant/70 lg:grid-cols-4 lg:divide-y-0">
 
@@ -298,13 +298,13 @@ export default function RecordDetailPage() {
 
         <section className="min-w-0">
 
-          <div className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+          <div className="overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
 
             {/* Section header */}
 
             <div className="border-b border-outline-variant/70 px-5 py-4">
 
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                 Source Evidence
               </p>
 
@@ -370,11 +370,11 @@ export default function RecordDetailPage() {
               PROCESSING
           ================================================= */}
 
-          <div className="mt-6 rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+          <div className="mt-6 rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
 
             <div className="border-b border-outline-variant/70 px-5 py-4">
 
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                 Processing
               </p>
 
@@ -429,13 +429,13 @@ export default function RecordDetailPage() {
               RECORD DATA
           ================================================= */}
 
-          <div className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+          <div className="overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
 
             <div className="flex flex-col gap-3 border-b border-outline-variant/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
 
               <div>
 
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                   Structured Record
                 </p>
 
@@ -493,7 +493,7 @@ export default function RecordDetailPage() {
 
             </div>
 
-            <div className="border-t border-outline-variant/70 bg-surface-container-low px-5 py-4">
+            <div className="border-t border-outline-variant/70 bg-[#eef1f4]-low px-5 py-4">
 
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
 
@@ -515,13 +515,13 @@ export default function RecordDetailPage() {
               AUDIT TRAIL
           ================================================= */}
 
-          <div className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+          <div className="overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
 
             <div className="flex flex-col gap-3 border-b border-outline-variant/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
 
               <div>
 
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                   Traceability
                 </p>
 
@@ -605,7 +605,7 @@ export default function RecordDetailPage() {
           ACTIONS
       ===================================================== */}
 
-      <div className="mt-6 flex flex-col gap-3 rounded-xl border border-outline-variant/70 bg-surface-container-lowest p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] p-4 sm:flex-row sm:items-center sm:justify-between">
 
         <div>
 
@@ -850,7 +850,7 @@ function AuditEvent({
         ].join(' ')}
       >
 
-        <div className="rounded-lg border border-outline-variant/70 bg-surface-container-low p-4">
+        <div className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9] p-4">
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
 
