@@ -328,7 +328,7 @@ export default function MultilingualPage() {
               View
             </span>
 
-            <div className="flex rounded-lg border border-outline-variant bg-surface-container-lowest p-1">
+            <div className="flex rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est p-1">
               <button
                 type="button"
                 onClick={() => setViewMode('side')}
@@ -359,7 +359,7 @@ export default function MultilingualPage() {
         </div>
       </header>
 
-      <section className="mb-6 overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+      <section className="mb-6 overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
         <div className="grid grid-cols-2 divide-x divide-y divide-outline-variant/70 sm:grid-cols-4 sm:divide-y-0">
           <SummaryItem
             label="Fields"
@@ -390,9 +390,9 @@ export default function MultilingualPage() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(300px,0.75fr)_minmax(0,1.5fr)]">
         <aside className="space-y-6">
-          <section className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+          <section className="overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
             <div className="border-b border-outline-variant/70 px-5 py-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                 Source Evidence
               </p>
 
@@ -443,9 +443,9 @@ export default function MultilingualPage() {
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+          <section className="overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
             <div className="border-b border-outline-variant/70 px-5 py-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                 Processing
               </p>
 
@@ -493,10 +493,10 @@ export default function MultilingualPage() {
         </aside>
 
         <main className="min-w-0">
-          <section className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
+          <section className="overflow-hidden rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)]">
             <div className="flex flex-col gap-4 border-b border-outline-variant/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-primary">
                   Multilingual Review
                 </p>
 
@@ -555,7 +555,7 @@ export default function MultilingualPage() {
             )}
 
             {canEdit && (
-              <div className="flex flex-col gap-3 border-t border-outline-variant/70 bg-surface-container-low px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div className="flex flex-col gap-3 border-t border-outline-variant/70 bg-[#eef1f4]-low px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <div>
                   {saveError ? (
                     <p className="text-xs font-semibold text-error">
@@ -596,7 +596,7 @@ export default function MultilingualPage() {
             )}
           </section>
 
-          <section className="mt-6 rounded-xl border border-outline-variant/70 bg-surface-container-lowest px-5 py-4 sm:px-6">
+          <section className="mt-6 rounded-2xl border border-outline-variant/70 bg-white shadow-[0_8px_26px_rgba(11,45,85,0.055)] px-5 py-4 sm:px-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-sm font-semibold text-on-surface">
@@ -769,7 +769,7 @@ function MultilingualFieldRow({
               className="min-h-[76px] w-full resize-y rounded-lg border border-primary/40 bg-surface-container-lowest px-3 py-3 text-sm leading-6 text-on-surface outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
             />
           ) : (
-            <div className="min-h-[76px] rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-3 text-sm leading-6 text-on-surface">
+            <div className="min-h-[76px] rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est px-3 py-3 text-sm leading-6 text-on-surface">
               {normalizedValue || value || '—'}
             </div>
           )}
