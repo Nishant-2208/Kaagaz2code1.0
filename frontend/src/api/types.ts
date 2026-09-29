@@ -118,6 +118,8 @@ export interface ExtractedField {
 
   normalizedValue?: string;
 
+  normalizedLanguage?: string;
+
   boundingBox?: BoundingBox;
 }
 
