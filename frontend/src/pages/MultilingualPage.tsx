@@ -168,15 +168,15 @@ export default function MultilingualPage() {
     [fields, record?.status],
   );
 
-  const language = useMemo(() => {
+  const language = useMemo((): string => {
     const languages = fields
       .map((field) => field.sourceLanguage)
-      .filter(Boolean);
+      .filter((lang): lang is string => Boolean(lang));
 
     if (languages.length === 0) return 'Not detected';
 
     const unique = [...new Set(languages)];
-    return unique.length === 1 ? unique[0] : 'Mixed';
+    return unique.length === 1 && unique[0] ? unique[0] : 'Mixed';
   }, [fields]);
 
   function handleValueChange(fieldId: string, value: string) {

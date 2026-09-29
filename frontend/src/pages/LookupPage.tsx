@@ -5,7 +5,7 @@ import type { LookupResult } from '../api/types';
 type SearchType = 'khasra' | 'owner' | 'village';
 
 function StatusIcon({ status }: { status: LookupResult['status'] }) {
-  const config = {
+  const configMap: Record<LookupResult['status'], { icon: string; label: string; className: string }> = {
     approved: {
       icon: 'verified',
       label: 'Approved',
@@ -26,6 +26,16 @@ function StatusIcon({ status }: { status: LookupResult['status'] }) {
       label: 'In Review',
       className: 'bg-amber-50 text-amber-700',
     },
+    needs_review: {
+      icon: 'rate_review',
+      label: 'Needs Review',
+      className: 'bg-amber-50 text-amber-700',
+    },
+    processing: {
+      icon: 'sync',
+      label: 'Processing',
+      className: 'bg-blue-50 text-blue-700',
+    },
     flagged: {
       icon: 'flag',
       label: 'Flagged',
@@ -36,12 +46,28 @@ function StatusIcon({ status }: { status: LookupResult['status'] }) {
       label: 'Discrepancy',
       className: 'bg-error-container text-on-error-container',
     },
+    rejected: {
+      icon: 'cancel',
+      label: 'Rejected',
+      className: 'bg-error-container text-on-error-container',
+    },
+    failed: {
+      icon: 'error',
+      label: 'Failed',
+      className: 'bg-error-container text-on-error-container',
+    },
     locked: {
       icon: 'lock',
       label: 'Locked',
       className: 'bg-surface-container-high text-on-surface-variant',
     },
-  }[status];
+  };
+
+  const config = configMap[status] ?? {
+    icon: 'help',
+    label: String(status),
+    className: 'bg-surface-container-high text-on-surface-variant',
+  };
 
   return (
     <span

@@ -158,7 +158,7 @@ export default function UploadPage() {
     setActiveStage(1);
 
     try {
-      // Kick off the real pipeline: OpenCV preprocessing -> Tesseract OCR
+      // Kick off the real pipeline: OpenCV preprocessing -> PaddleOCR
       // -> LLM structured extraction -> confidence scoring (see
       // backend_dev_engg.md). The stage indicator below advances as the
       // upload completes and the batch is queued for processing.
@@ -213,7 +213,7 @@ export default function UploadPage() {
               Land Record Ingestion & Preprocessing
             </h1>
             <p className="mt-1 text-sm text-on-surface-variant">
-              Upload legacy deeds, Mouza cadastral maps, or Khatonis for automated OpenCV deskewing and multi-script Tesseract extraction.
+              Upload legacy deeds, Mouza cadastral maps, or Khatonis for automated OpenCV deskewing and multi-script PaddleOCR extraction.
             </p>
           </div>
 

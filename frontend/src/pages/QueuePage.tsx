@@ -114,7 +114,7 @@ export default function QueuePage() {
 
       return matchesSearch && matchesStatus;
     });
-  }, [search, statusFilter]);
+  }, [queueItems, search, statusFilter]);
 
   const awaitingReviewCount = queueItems.filter(
     (item) =>

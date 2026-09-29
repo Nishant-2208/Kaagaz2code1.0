@@ -442,6 +442,8 @@ export async function exchangeGoogleCode(code: string): Promise<LoginResponse> {
   };
 }
 
+
+
 export async function refreshAccessToken(): Promise<boolean> {
   return Boolean(await refreshStoredAccessToken());
 }
@@ -507,9 +509,6 @@ export async function getExtractedFields(recordId: string): Promise<ExtractedFie
    REVIEW / FIELD EDITS
    ========================================================= */
 
-function sectionForField(fieldId: string): string {
-  return fieldId.split('.')[0];
-}
 
 export async function updateExtractedField(
   requestData: UpdateExtractedFieldRequest,
@@ -854,7 +853,7 @@ export async function resolveDiscrepancy(
    MULTILINGUAL
    ========================================================= */
 
-export async function getMultilingualFields(recordId: string): Promise<MultilingualField[]> {
+export async function getMultilingualFields(_recordId?: string): Promise<MultilingualField[]> {
   if (USE_MOCKS) return mockDelay(mockMultilingualFields);
 
   // No multilingual endpoint exists in the current backend yet.
@@ -918,7 +917,6 @@ export async function getQueueItems(): Promise<QueueItem[]> {
 
     const identifiers = extraction?.land_identifiers ?? {};
     const location = extraction?.location_details ?? {};
-    const land = extraction?.land_details ?? {};
     const ownership = extraction?.ownership_details ?? {};
     const confidence = asConfidencePercent(
       extraction?.confidence_scores?.overall_confidence ??

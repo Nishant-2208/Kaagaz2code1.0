@@ -250,12 +250,12 @@ export default function LoginPage() {
 
     let cancelled = false;
 
-    async function finishGoogleLogin() {
+    async function finishGoogleLogin(authCode: string) {
       setError('');
       setIsGoogleSubmitting(true);
 
       try {
-        const user = await completeGoogleLogin(code);
+        const user = await completeGoogleLogin(authCode);
 
         if (cancelled) return;
 
@@ -277,7 +277,7 @@ export default function LoginPage() {
       }
     }
 
-    void finishGoogleLogin();
+    void finishGoogleLogin(code);
 
     return () => {
       cancelled = true;
@@ -290,13 +290,11 @@ export default function LoginPage() {
     setSearchParams,
   ]);
 
-
   // =======================================================
   // GOOGLE BUTTON ERROR
   // =======================================================
 
   function handleGoogleError() {
-
     setError(
       'Google sign-in was cancelled or failed.',
     );
@@ -373,7 +371,7 @@ export default function LoginPage() {
                   document_scanner
                 </span>
 
-                OpenCV + Tesseract OCR
+                OpenCV + PaddleOCR
 
               </span>
 

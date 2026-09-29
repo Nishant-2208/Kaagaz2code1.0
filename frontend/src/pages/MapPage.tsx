@@ -45,10 +45,15 @@ L.Icon.Default.mergeOptions({
 
 const statusColors: Record<RecordStatus, string> = {
   verified: '#0F9D58',
+  approved: '#0F9D58',
   pending_review: '#F59E0B',
   in_review: '#F59E0B',
+  needs_review: '#F59E0B',
+  processing: '#1A73E8',
   flagged: '#D93025',
   discrepancy: '#D93025',
+  rejected: '#D93025',
+  failed: '#D93025',
   locked: '#767683',
 };
 
