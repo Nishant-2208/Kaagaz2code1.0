@@ -4,8 +4,14 @@ import type { LookupResult } from '../api/types';
 
 type SearchType = 'khasra' | 'owner' | 'village';
 
+type StatusConfig = {
+  icon: string;
+  label: string;
+  className: string;
+};
+
 function StatusIcon({ status }: { status: LookupResult['status'] }) {
-  const config = {
+  const configMap: Record<string, StatusConfig> = {
     approved: {
       icon: 'verified',
       label: 'Approved',
@@ -41,7 +47,13 @@ function StatusIcon({ status }: { status: LookupResult['status'] }) {
       label: 'Locked',
       className: 'bg-surface-container-high text-on-surface-variant',
     },
-  }[status];
+  };
+
+  const config = configMap[status] ?? {
+    icon: 'help',
+    label: String(status),
+    className: 'bg-surface-container-high text-on-surface-variant',
+  };
 
   return (
     <span
