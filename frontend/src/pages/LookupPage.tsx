@@ -62,7 +62,7 @@ function StatusIcon({ status }: { status: LookupResult['status'] }) {
 
 function ResultCard({ result }: { result: LookupResult }) {
   return (
-    <article className="rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-5 sm:p-6 shadow-[0_2px_10px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_6px_20px_rgba(15,23,42,0.07)]">
+    <article className="rounded-2xl border border-outline-variant/70 bg-white p-5 shadow-[0_8px_26px_rgba(11,45,85,0.06)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(11,45,85,0.09)] sm:p-6">
 
       {/* Top row */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -148,7 +148,7 @@ function ResultCard({ result }: { result: LookupResult }) {
       </div>
 
       {/* Verification note */}
-      <div className="mt-4 flex items-start gap-3 rounded-xl bg-primary-fixed/35 p-4">
+      <div className="mt-4 flex items-start gap-3 rounded-xl border border-primary/10 bg-primary-fixed/45 p-4">
 
         <span className="material-symbols-outlined shrink-0 text-[20px] text-primary icon-fill">
           verified_user
@@ -244,34 +244,49 @@ export default function LookupPage() {
           HERO
       ===================================================== */}
 
-      <section className="mx-auto max-w-4xl text-center">
+      <section className="relative mx-auto max-w-5xl overflow-hidden rounded-[28px] border border-primary/10 bg-white px-6 py-10 text-center shadow-[0_18px_50px_rgba(11,45,85,0.09)] sm:px-10 sm:py-12">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full border-[18px] border-primary/5" />
+        <div className="pointer-events-none absolute -bottom-24 -left-20 h-48 w-48 rounded-full border-[18px] border-[#168548]/5" />
 
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-fixed text-primary shadow-sm">
-          <span className="material-symbols-outlined text-[28px] icon-fill">
-            verified
-          </span>
+        <div className="relative">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-fixed text-primary shadow-sm ring-8 ring-primary-fixed/40">
+            <span className="material-symbols-outlined text-[30px] icon-fill">
+              verified
+            </span>
+          </div>
+
+          <p className="mt-6 text-[11px] font-extrabold uppercase tracking-[0.18em] text-secondary">
+            Citizen Services · Public Verification
+          </p>
+
+          <h1 className="mt-3 font-headline text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
+            Search Land Records
+          </h1>
+
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-on-surface-variant sm:text-lg">
+            Find approved digitized land-record information using a Khasra number,
+            registered owner name, or village.
+          </p>
+
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-on-surface-variant">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-secondary icon-fill">verified</span>
+              Approved records only
+            </span>
+            <span className="h-1 w-1 rounded-full bg-outline-variant" />
+            <span className="inline-flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-primary">shield</span>
+              Public essential details
+            </span>
+          </div>
         </div>
-
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-          Public Verification Service
-        </p>
-
-        <h1 className="mt-3 font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-          Public Record Lookup
-        </h1>
-
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-on-surface-variant sm:text-lg">
-          Search digitally verified land-record information using a
-          Khasra number, registered owner name, or village.
-        </p>
-
       </section>
 
       {/* =====================================================
           SEARCH PANEL
       ===================================================== */}
 
-      <section className="mx-auto mt-10 max-w-5xl rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-5 shadow-[0_8px_30px_rgba(15,23,42,0.05)] sm:p-7 lg:p-8">
+      <section className="mx-auto mt-6 max-w-5xl rounded-2xl border border-outline-variant/70 bg-white p-5 shadow-[0_12px_35px_rgba(11,45,85,0.07)] sm:p-7 lg:p-8">
 
         {/* Search modes */}
         <div>
@@ -406,7 +421,7 @@ export default function LookupPage() {
       ===================================================== */}
 
       {results && (
-        <section className="mx-auto mt-10 max-w-5xl">
+        <section className="mx-auto mt-8 max-w-5xl">
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 
