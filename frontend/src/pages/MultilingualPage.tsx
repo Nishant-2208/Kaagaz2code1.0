@@ -376,7 +376,7 @@ export default function MultilingualPage() {
 
           <SummaryItem
             label="Source Language"
-            value={language}
+            value={language ?? 'Not detected'}
             supporting="Detected from extracted values"
           />
 
@@ -463,7 +463,7 @@ export default function MultilingualPage() {
 
               <MetricRow
                 label="Language Detected"
-                value={language}
+                value={language ?? 'Not detected'}
               />
 
               <MetricRow
