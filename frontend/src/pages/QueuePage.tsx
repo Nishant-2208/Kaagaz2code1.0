@@ -239,7 +239,7 @@ export default function QueuePage() {
                 setSearch(event.target.value)
               }
               placeholder="Search record ID, Khasra, owner, village..."
-              className="min-h-12 w-full rounded-lg border border-outline-variant bg-surface-container-lowest pl-11 pr-4 text-sm text-on-surface outline-none transition-colors placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="min-h-12 w-full rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est pl-11 pr-4 text-sm text-on-surface outline-none transition-colors placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
 
           </div>
@@ -251,7 +251,7 @@ export default function QueuePage() {
                 event.target.value as QueueFilter,
               )
             }
-            className="min-h-12 rounded-lg border border-outline-variant bg-surface-container-lowest px-4 text-sm text-on-surface outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/10 lg:w-56"
+            className="min-h-12 rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est px-4 text-sm text-on-surface outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/10 lg:w-56"
           >
             {statusOptions.map((option) => (
               <option
@@ -604,7 +604,7 @@ function QueueSummary({
   success?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
+    <div className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est p-5">
 
       <div className="flex items-start justify-between gap-3">
 
