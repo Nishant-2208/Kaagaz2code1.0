@@ -61,7 +61,7 @@ export default function PublicLayout() {
 
             <NavLink
               to="/login"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2.5 text-xs font-bold text-on-primary shadow-sm transition-all hover:bg-primary-container hover:shadow-md"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#0b2d55] px-3.5 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#123f73] hover:shadow-md"
             >
               <span className="material-symbols-outlined text-[18px]">lock</span>
               <span className="hidden sm:inline">Officer Login</span>
