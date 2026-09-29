@@ -376,7 +376,7 @@ export default function MapPage() {
           SEARCH + FILTER
       ===================================================== */}
 
-      <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 sm:p-5">
+      <section className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est p-4 sm:p-5">
 
         <div className="flex flex-col gap-3 lg:flex-row">
 
@@ -393,7 +393,7 @@ export default function MapPage() {
                 setSearch(event.target.value)
               }
               placeholder="Search Khasra, owner, or village..."
-              className="min-h-11 w-full rounded-lg border border-outline-variant bg-surface-container-lowest pl-11 pr-4 text-sm text-on-surface outline-none placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="min-h-11 w-full rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est pl-11 pr-4 text-sm text-on-surface outline-none placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
 
           </div>
@@ -405,7 +405,7 @@ export default function MapPage() {
                 event.target.value as MapFilter,
               )
             }
-            className="min-h-11 rounded-lg border border-outline-variant bg-surface-container-lowest px-4 text-sm text-on-surface outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 lg:w-52"
+            className="min-h-11 rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est px-4 text-sm text-on-surface outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 lg:w-52"
           >
 
             <option value="all">
@@ -796,7 +796,7 @@ export default function MapPage() {
           LEGEND
       ===================================================== */}
 
-      <section className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-outline-variant bg-surface-container-lowest px-5 py-4">
+      <section className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est px-5 py-4">
 
         <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-outline">
           Status
@@ -846,7 +846,7 @@ function MapSummary({
   success?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
+    <div className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9]est p-5">
 
       <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-outline">
         {label}
@@ -885,7 +885,7 @@ function InfoItem({
   value: string;
 }) {
   return (
-    <div className="rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2.5">
+    <div className="rounded-xl border border-outline-variant/70 bg-[#f4f6f9] px-3 py-2.5">
 
       <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-outline">
         {label}
